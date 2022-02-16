@@ -11,9 +11,9 @@
             "mode": "auto",
             "program": "${workspaceRoot}/cmd/guru.corporate.actions.go",
             "env": {
-                "CONSUL_URL": "http://consul.guruapi.com",
+                "CONSUL_URL": "http://consul.qa.guruapi.com",
                 "CONSUL_CONTEXT": "/v1/kv",
-                "CONSUL_SERVICE": ""
+                "CONSUL_SERVICE": "guru.qa.corporate.actions"
             },
             "args": []
         }
