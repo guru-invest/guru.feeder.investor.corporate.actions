@@ -1,17 +1,13 @@
 package mapper
 
-import "time"
-
 //TODO - Remover comentários após validação
 
 type OMSTransaction struct {
 	//Dados de transações
-	//TODO - De onde vem esses dados ?
-	Symbol    string
-	Quantity  int
-	Price     float64
-	Amount    float64
-	TradeDate time.Time
+	ID       int
+	Symbol   string
+	Quantity int
+	Price    float64
 
 	//Dados calculados com base nos eventos corporativos
 	PostEventQuantity int
@@ -20,6 +16,5 @@ type OMSTransaction struct {
 	// Dados do evento corporativo que estão na Financial
 	PostEventSymbol string
 	Factor          float64
-	ComDate         time.Time
 	Event           string
 }
