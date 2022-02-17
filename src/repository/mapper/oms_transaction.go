@@ -8,10 +8,11 @@ func (OMSTransaction) TableName() string {
 
 type OMSTransaction struct {
 	//Dados de transações
-	ID       int     `gorm:"column:id"`
-	Symbol   string  `gorm:"column:symbol"`
-	Quantity int     `gorm:"column:quantity"`
-	Price    float64 `gorm:"column:price"`
+	ID        int       `gorm:"column:id"`
+	Symbol    string    `gorm:"column:symbol"`
+	Quantity  int       `gorm:"column:quantity"`
+	Price     float64   `gorm:"column:price"`
+	TradeDate time.Time `gorm:"column:trade_date"`
 
 	//Dados calculados com base nos eventos corporativos
 	PostEventQuantity int     `gorm:"column:post_event_quantity"`

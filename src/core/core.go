@@ -18,22 +18,6 @@ func Run() {
 
 func doWork() {
 
-	// Retorna todos os Symbols que não foram aplicados eventos.
-	// Symbols := events.GetSymbols()
-	// fmt.Println(Symbols)
-
-	// Retorna todos os Eventos Corporativos de um determinado Symbol.
-	// CorporateActions := events.GetCorporateActions("BIDI11")
-	// fmt.Println(CorporateActions)
-
-	// Retorna as transações que devem ser aplicados os eventos corporativos.
-	// Aqui a data inicial é o com_date do meu proximo evento e a data final é o com_date do meu evento atual
-	// Dessa forma eu consigo saber quais as transações realmente precisam sofrer a aplicação do evento
-	// OMSTransaction := events.GetOMSTransaction("BIDI11", CorporateActions[0].Description, CorporateActions[1].ComDate, CorporateActions[0].ComDate)
-	// fmt.Println(OMSTransaction)
-
-	// events.Basic(OMSTransaction[0])
-
 	Symbols := repository.GetSymbols()
 	totalOfSymbols := len(Symbols)
 	currentSymbol := 0
@@ -51,26 +35,30 @@ func doWork() {
 
 func doBasicEvents(symbol string) {
 	CorporateActions := repository.GetCorporateActions(symbol)
-	for index2, value2 := range CorporateActions {
-
-		var begin_date time.Time
-		if index2 >= len(CorporateActions)-1 {
-			begin_date = time.Now().AddDate(-5, 0, 0)
-		} else {
-			begin_date = CorporateActions[index2+1].ComDate
-		}
-
-		end_date := value2.ComDate
+	for _, value2 := range CorporateActions {
 		symbol := symbol
 
-		OMSTransaction := repository.GetOMSTransaction(symbol, begin_date, end_date)
+		OMSTransaction := repository.GetOMSTransaction(symbol)
 
 		for index, value3 := range OMSTransaction {
-			value3.EventName = value2.Description
-			value3.PostEventSymbol = value2.TargetTicker
-			value3.EventFactor = value2.CalculatedFactor
-			value3.EventDate = value2.ComDate
+
+			if value3.TradeDate.After(value2.ComDate) {
+				value3.EventName = "PADRAO"
+				value3.PostEventSymbol = value3.Symbol
+				value3.EventFactor = 1
+				value3.EventDate, _ = time.Parse("2006-01-02", "2001-01-01")
+				OMSTransaction[index] = events.ApplyCorporateAction(value3)
+
+			} else {
+
+				value3.EventName = value2.Description
+				value3.PostEventSymbol = value2.TargetTicker
+				value3.EventFactor = value2.CalculatedFactor
+				value3.EventDate = value2.ComDate
+			}
+
 			OMSTransaction[index] = events.ApplyCorporateAction(value3)
+
 		}
 
 		repository.UpdateOMSTransaction(OMSTransaction)

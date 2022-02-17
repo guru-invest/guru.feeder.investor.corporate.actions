@@ -2,7 +2,6 @@ package repository
 
 import (
 	"log"
-	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
@@ -11,16 +10,16 @@ type OMSTransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h OMSTransactionRepository) getOMSTransactions(symbol string, begin_date, end_date time.Time) ([]mapper.OMSTransaction, error) {
+func (h OMSTransactionRepository) getOMSTransactions(symbol string) ([]mapper.OMSTransaction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
 	var oms_transaction []mapper.OMSTransaction
 	err := h._connection._databaseConnection.
-		Select("id, symbol, quantity, price, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
-		Order("trade_date desc").
-		Find(&oms_transaction, "symbol = ? and trade_date between ? and ?",
-			symbol, begin_date, end_date).
+		Select("id, symbol, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Order("trade_date asc").
+		Find(&oms_transaction, "symbol = ?",
+			symbol).
 		Error
 
 	if err != nil {
@@ -42,9 +41,9 @@ func (h OMSTransactionRepository) updateOMSTransactions(OMSTransaction []mapper.
 	}
 }
 
-func GetOMSTransaction(symbol string, begin_date, end_date time.Time) []mapper.OMSTransaction {
+func GetOMSTransaction(symbol string) []mapper.OMSTransaction {
 	db := OMSTransactionRepository{}
-	oms_transaction, err := db.getOMSTransactions(symbol, begin_date, end_date)
+	oms_transaction, err := db.getOMSTransactions(symbol)
 	if err != nil {
 		log.Println(err)
 		return []mapper.OMSTransaction{}
