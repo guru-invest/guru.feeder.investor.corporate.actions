@@ -5,7 +5,6 @@ import (
 	"strconv"
 )
 
-//TODO - Mover isso para outro lugar e validar com Tom ou Tiago
 func Truncate(value float64, decimals int) float64 {
 
 	valueText := fmt.Sprintf("%f", value)

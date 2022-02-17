@@ -30,7 +30,6 @@ func (db *DatabaseConnection) connect() {
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		//TODO - Alterar log para Silent ao finalizar desenvolvimento
 		logger.Config{
 			SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
 			LogLevel:                  logger.Silent,          // Log level
