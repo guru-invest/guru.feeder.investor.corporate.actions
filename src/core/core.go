@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/core/events"
@@ -33,7 +34,11 @@ func doBasicEvents() {
 	// events.Basic(OMSTransaction[0])
 
 	Symbols := events.GetSymbols()
+	totalOfSymbols := len(Symbols)
+	currentSymbol := 0
+
 	for _, value := range Symbols {
+		log.Printf("%d de %d Symbols foram analisados\n", currentSymbol, totalOfSymbols)
 
 		CorporateActions := events.GetCorporateActions(value.Name)
 		for index2, value2 := range CorporateActions {
@@ -55,6 +60,8 @@ func doBasicEvents() {
 				events.Basic(value3)
 			}
 		}
+
+		currentSymbol += 1
 	}
 
 }
