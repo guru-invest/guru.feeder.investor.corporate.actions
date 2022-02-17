@@ -41,10 +41,8 @@ func doWork() {
 	for _, value := range Symbols {
 
 		log.Printf("%d de %d Symbols foram analisados\n", currentSymbol, totalOfSymbols)
-		start := time.Now()
 		doBasicEvents(value.Name)
-		elapsed := time.Since(start)
-		fmt.Printf("doBasicEvents took %s\n", elapsed)
+
 		currentSymbol += 1
 
 	}
@@ -64,20 +62,14 @@ func doBasicEvents(symbol string) {
 
 		end_date := value2.ComDate
 		event := value2.Description
+		target_symbol := value2.TargetTicker
 		symbol := symbol
 
-		start := time.Now()
-		OMSTransaction := repository.GetOMSTransaction(symbol, event, begin_date, end_date)
-		elapsed := time.Since(start)
-		fmt.Printf("GetOMSTransaction took %s\n", elapsed)
+		OMSTransaction := repository.GetOMSTransaction(symbol, target_symbol, event, begin_date, end_date)
 
 		for _, value3 := range OMSTransaction {
-			start := time.Now()
 			events.ApplyCorporateAction(value3)
-			elapsed := time.Since(start)
-			fmt.Printf("ApplyCorporateAction took %s\n", elapsed)
-			// new_oms_transaction := events.ApplyCorporateAction(value3)
-			// persists(new_oms_transaction)
+			//TODO - persistir o new_oms_transaction
 		}
 	}
 
