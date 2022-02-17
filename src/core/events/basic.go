@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository"
@@ -11,6 +12,8 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/singleton"
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
+
+var mutex = &sync.Mutex{}
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
 func Basic(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
@@ -54,7 +57,9 @@ func GetCorporateActions(symbol string) []mapper.CorporateAction {
 	if len(corporateActionsMap) == 0 {
 		allCorporateActions := getAllCorporateActions()
 		for _, value := range allCorporateActions {
+			mutex.Lock()
 			corporateActionsMap[value.Symbol] = append(corporateActionsMap[value.Symbol], value)
+			mutex.Unlock()
 		}
 		// TODO - Porque quando o map não existe, ele não passa no return de fora ?
 		return corporateActionsMap[symbol]

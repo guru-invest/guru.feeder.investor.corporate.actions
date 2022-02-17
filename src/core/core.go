@@ -10,12 +10,12 @@ import (
 
 func Run() {
 	start := time.Now()
-	doBasicEvents()
+	doWork()
 	elapsed := time.Since(start)
 	fmt.Printf("Processs took %s\n", elapsed)
 }
 
-func doBasicEvents() {
+func doWork() {
 
 	// Retorna todos os Symbols que não foram aplicados eventos.
 	// Symbols := events.GetSymbols()
@@ -38,30 +38,35 @@ func doBasicEvents() {
 	currentSymbol := 0
 
 	for _, value := range Symbols {
+
 		log.Printf("%d de %d Symbols foram analisados\n", currentSymbol, totalOfSymbols)
+		doBasicEvents(value.Name)
+		currentSymbol += 1
 
-		CorporateActions := events.GetCorporateActions(value.Name)
-		for index2, value2 := range CorporateActions {
+	}
 
-			var begin_date time.Time
-			if index2 >= len(CorporateActions)-1 {
-				begin_date = time.Now().Add(time.Duration(-5) * time.Duration(time.Now().Year()))
-			} else {
-				begin_date = CorporateActions[index2+1].ComDate
-			}
+}
 
-			end_date := value2.ComDate
-			event := value2.Description
-			symbol := value.Name
+func doBasicEvents(symbol string) {
+	CorporateActions := events.GetCorporateActions(symbol)
+	for index2, value2 := range CorporateActions {
 
-			OMSTransaction := events.GetOMSTransaction(symbol, event, begin_date, end_date)
-
-			for _, value3 := range OMSTransaction {
-				events.Basic(value3)
-			}
+		var begin_date time.Time
+		if index2 >= len(CorporateActions)-1 {
+			begin_date = time.Now().Add(time.Duration(-5) * time.Duration(time.Now().Year()))
+		} else {
+			begin_date = CorporateActions[index2+1].ComDate
 		}
 
-		currentSymbol += 1
+		end_date := value2.ComDate
+		event := value2.Description
+		symbol := symbol
+
+		OMSTransaction := events.GetOMSTransaction(symbol, event, begin_date, end_date)
+
+		for _, value3 := range OMSTransaction {
+			events.Basic(value3)
+		}
 	}
 
 }
