@@ -57,7 +57,7 @@ func doBasicEvents(symbol string) {
 
 		var begin_date time.Time
 		if index2 >= len(CorporateActions)-1 {
-			begin_date = time.Now().Add(time.Duration(-5) * time.Duration(time.Now().Year()))
+			begin_date = time.Now().AddDate(-5, 0, 0)
 		} else {
 			begin_date = CorporateActions[index2+1].ComDate
 		}
