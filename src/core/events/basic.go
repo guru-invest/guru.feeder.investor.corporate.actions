@@ -16,7 +16,7 @@ import (
 var mutex = &sync.Mutex{}
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
-func Basic(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
+func ApplyCorporateAction(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
 
 	// TODO - Remover prints
 	x, _ := json.Marshal(OMSTransaction)
