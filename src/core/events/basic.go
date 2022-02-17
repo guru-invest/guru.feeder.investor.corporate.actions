@@ -3,17 +3,11 @@ package events
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"sync"
-	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.corporate.actions/src/singleton"
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
-
-var mutex = &sync.Mutex{}
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
 func ApplyCorporateAction(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
@@ -37,55 +31,4 @@ func ApplyCorporateAction(OMSTransaction mapper.OMSTransaction) mapper.OMSTransa
 	fmt.Println(string(y))
 
 	return OMSTransaction
-}
-
-func GetSymbols() []mapper.Symbol {
-	db := repository.SymbolRepository{}
-	symbols, err := db.GetSymbols()
-	if err != nil {
-		log.Println(err)
-		return []mapper.Symbol{}
-	}
-
-	return symbols
-}
-
-var corporateActionsMap = map[string][]mapper.CorporateAction{}
-
-func GetCorporateActions(symbol string) []mapper.CorporateAction {
-
-	if len(corporateActionsMap) == 0 {
-		allCorporateActions := getAllCorporateActions()
-		for _, value := range allCorporateActions {
-			mutex.Lock()
-			corporateActionsMap[value.Symbol] = append(corporateActionsMap[value.Symbol], value)
-			mutex.Unlock()
-		}
-		// TODO - Porque quando o map não existe, ele não passa no return de fora ?
-		return corporateActionsMap[symbol]
-	}
-
-	return corporateActionsMap[symbol]
-}
-
-func getAllCorporateActions() []mapper.CorporateAction {
-	db := repository.CorporateActionRepository{}
-	corporate_actions, err := db.GetAllCorporateActions()
-	if err != nil {
-		log.Println(err)
-		return []mapper.CorporateAction{}
-	}
-
-	return corporate_actions
-}
-
-func GetOMSTransaction(symbol, event string, begin_date, end_date time.Time) []mapper.OMSTransaction {
-	db := repository.OMSTransactionRepository{}
-	oms_transaction, err := db.GetOMSTransactions(symbol, event, begin_date, end_date)
-	if err != nil {
-		log.Println(err)
-		return []mapper.OMSTransaction{}
-	}
-
-	return oms_transaction
 }

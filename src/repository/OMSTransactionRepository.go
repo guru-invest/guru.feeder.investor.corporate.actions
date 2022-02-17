@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"log"
 	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
@@ -10,7 +11,7 @@ type OMSTransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h OMSTransactionRepository) GetOMSTransactions(symbol, event string, begin_date, end_date time.Time) ([]mapper.OMSTransaction, error) {
+func (h OMSTransactionRepository) getOMSTransactions(symbol, event string, begin_date, end_date time.Time) ([]mapper.OMSTransaction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
@@ -27,4 +28,15 @@ func (h OMSTransactionRepository) GetOMSTransactions(symbol, event string, begin
 	}
 
 	return oms_transaction, nil
+}
+
+func GetOMSTransaction(symbol, event string, begin_date, end_date time.Time) []mapper.OMSTransaction {
+	db := OMSTransactionRepository{}
+	oms_transaction, err := db.getOMSTransactions(symbol, event, begin_date, end_date)
+	if err != nil {
+		log.Println(err)
+		return []mapper.OMSTransaction{}
+	}
+
+	return oms_transaction
 }

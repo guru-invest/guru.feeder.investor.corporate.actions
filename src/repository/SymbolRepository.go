@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
 
@@ -8,7 +10,7 @@ type SymbolRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h SymbolRepository) GetSymbols() ([]mapper.Symbol, error) {
+func (h SymbolRepository) getSymbols() ([]mapper.Symbol, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
@@ -19,4 +21,15 @@ func (h SymbolRepository) GetSymbols() ([]mapper.Symbol, error) {
 	}
 
 	return symbol, nil
+}
+
+func GetSymbols() []mapper.Symbol {
+	db := SymbolRepository{}
+	symbols, err := db.getSymbols()
+	if err != nil {
+		log.Println(err)
+		return []mapper.Symbol{}
+	}
+
+	return symbols
 }

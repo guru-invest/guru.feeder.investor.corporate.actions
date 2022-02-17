@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/core/events"
+	"github.com/guru-invest/guru.corporate.actions/src/repository"
 )
 
 func Run() {
@@ -33,7 +34,7 @@ func doWork() {
 
 	// events.Basic(OMSTransaction[0])
 
-	Symbols := events.GetSymbols()
+	Symbols := repository.GetSymbols()
 	totalOfSymbols := len(Symbols)
 	currentSymbol := 0
 
@@ -51,7 +52,7 @@ func doWork() {
 }
 
 func doBasicEvents(symbol string) {
-	CorporateActions := events.GetCorporateActions(symbol)
+	CorporateActions := repository.GetCorporateActions(symbol)
 	for index2, value2 := range CorporateActions {
 
 		var begin_date time.Time
@@ -66,7 +67,7 @@ func doBasicEvents(symbol string) {
 		symbol := symbol
 
 		start := time.Now()
-		OMSTransaction := events.GetOMSTransaction(symbol, event, begin_date, end_date)
+		OMSTransaction := repository.GetOMSTransaction(symbol, event, begin_date, end_date)
 		elapsed := time.Since(start)
 		fmt.Printf("GetOMSTransaction took %s\n", elapsed)
 
