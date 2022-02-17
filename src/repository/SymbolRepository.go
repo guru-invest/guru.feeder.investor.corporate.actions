@@ -15,7 +15,7 @@ func (h SymbolRepository) getSymbols() ([]mapper.Symbol, error) {
 	defer h._connection.disconnect()
 
 	var symbol []mapper.Symbol
-	err := h._connection._databaseConnection.Distinct("symbol").Find(&symbol, "event_date is null").Error
+	err := h._connection._databaseConnection.Distinct("symbol").Find(&symbol).Error
 	if err != nil {
 		return []mapper.Symbol{}, err
 	}

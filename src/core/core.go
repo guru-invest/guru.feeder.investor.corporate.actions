@@ -61,16 +61,19 @@ func doBasicEvents(symbol string) {
 		}
 
 		end_date := value2.ComDate
-		event := value2.Description
-		target_symbol := value2.TargetTicker
 		symbol := symbol
 
-		OMSTransaction := repository.GetOMSTransaction(symbol, target_symbol, event, begin_date, end_date)
+		OMSTransaction := repository.GetOMSTransaction(symbol, begin_date, end_date)
 
-		for _, value3 := range OMSTransaction {
-			events.ApplyCorporateAction(value3)
-			//TODO - persistir o new_oms_transaction
+		for index, value3 := range OMSTransaction {
+			value3.EventName = value2.Description
+			value3.PostEventSymbol = value2.TargetTicker
+			value3.EventFactor = value2.CalculatedFactor
+			value3.EventDate = value2.ComDate
+			OMSTransaction[index] = events.ApplyCorporateAction(value3)
 		}
+
+		repository.UpdateOMSTransaction(OMSTransaction)
 	}
 
 }
