@@ -2,11 +2,9 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/core/events"
-	"github.com/guru-invest/guru.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
 
@@ -18,14 +16,12 @@ func Run() {
 }
 
 func doBasicEvents() {
-	db := repository.SymbolRepository{}
-	symbols, err := db.GetSymbols()
-	if err != nil {
-		log.Println(err)
-		return
-	}
 
-	log.Println(symbols)
+	Symbols := events.GetSymbols()
+	fmt.Println(Symbols)
+
+	CorporateActions := events.GetCorporateActions("BIDI11")
+	fmt.Println(CorporateActions)
 
 	events.Basic(mapper.OMSTransaction{})
 }
