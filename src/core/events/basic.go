@@ -47,9 +47,25 @@ func GetSymbols() []mapper.Symbol {
 	return symbols
 }
 
+var corporateActionsMap = map[string][]mapper.CorporateAction{}
+
 func GetCorporateActions(symbol string) []mapper.CorporateAction {
+
+	if len(corporateActionsMap) == 0 {
+		allCorporateActions := getAllCorporateActions()
+		for _, value := range allCorporateActions {
+			corporateActionsMap[value.Symbol] = append(corporateActionsMap[value.Symbol], value)
+		}
+		// TODO - Porque quando o map não existe, ele não passa no return de fora ?
+		return corporateActionsMap[symbol]
+	}
+
+	return corporateActionsMap[symbol]
+}
+
+func getAllCorporateActions() []mapper.CorporateAction {
 	db := repository.CorporateActionRepository{}
-	corporate_actions, err := db.GetCorporateActions(symbol)
+	corporate_actions, err := db.GetAllCorporateActions()
 	if err != nil {
 		log.Println(err)
 		return []mapper.CorporateAction{}

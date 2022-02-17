@@ -9,16 +9,16 @@ type CorporateActionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h CorporateActionRepository) GetCorporateActions(symbol string) ([]mapper.CorporateAction, error) {
+func (h CorporateActionRepository) GetAllCorporateActions() ([]mapper.CorporateAction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
 	var corporate_action []mapper.CorporateAction
 	err := h._connection._databaseConnection.
-		Select("description, com_date, target_ticker, calculated_factor").
+		Select("ticker, description, com_date, target_ticker, calculated_factor").
 		Order("com_date desc").
-		Find(&corporate_action, "com_date > current_timestamp - interval '5 years' and description in (?, ?, ?) and ticker = ?",
-			singleton.New().Update, singleton.New().Grouping, singleton.New().Unfolding, symbol).
+		Find(&corporate_action, "com_date > current_timestamp - interval '5 years' and description in (?, ?, ?)",
+			singleton.New().Update, singleton.New().Grouping, singleton.New().Unfolding).
 		Error
 
 	if err != nil {

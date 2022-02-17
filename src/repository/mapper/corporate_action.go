@@ -7,6 +7,7 @@ func (CorporateAction) TableName() string {
 }
 
 type CorporateAction struct {
+	Symbol           string    `gorm:"column:ticker"`
 	Description      string    `gorm:"column:description"`
 	ComDate          time.Time `gorm:"column:com_date"`
 	TargetTicker     string    `gorm:"column:target_ticker"`
