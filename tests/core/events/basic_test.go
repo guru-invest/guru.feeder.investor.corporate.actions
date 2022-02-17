@@ -11,11 +11,11 @@ import (
 func TestBasicGrouping(t *testing.T) {
 
 	OMSTransactionObject := mapper.OMSTransaction{}
-	OMSTransactionObject.Event = singleton.New().Grouping
+	OMSTransactionObject.EventName = singleton.New().Grouping
 	OMSTransactionObject.Symbol = "PRIO3"
 	OMSTransactionObject.Quantity = 5
 	OMSTransactionObject.Price = 3.33
-	OMSTransactionObject.Factor = 5
+	OMSTransactionObject.EventFactor = 5
 
 	OMSTransactionObject = events.Basic(OMSTransactionObject)
 
@@ -34,11 +34,11 @@ func TestBasicGrouping(t *testing.T) {
 func TestBasicUnfolding(t *testing.T) {
 
 	OMSTransactionObject := mapper.OMSTransaction{}
-	OMSTransactionObject.Event = singleton.New().Unfolding
+	OMSTransactionObject.EventName = singleton.New().Unfolding
 	OMSTransactionObject.Symbol = "ALUP4"
 	OMSTransactionObject.Quantity = 5
 	OMSTransactionObject.Price = 9.13
-	OMSTransactionObject.Factor = 0.1996007984
+	OMSTransactionObject.EventFactor = 0.1996007984
 
 	OMSTransactionObject = events.Basic(OMSTransactionObject)
 
@@ -57,12 +57,12 @@ func TestBasicUnfolding(t *testing.T) {
 func TestBasicUpdate(t *testing.T) {
 
 	OMSTransactionObject := mapper.OMSTransaction{}
-	OMSTransactionObject.Event = singleton.New().Update
+	OMSTransactionObject.EventName = singleton.New().Update
 	OMSTransactionObject.Symbol = "PASS12"
 	OMSTransactionObject.PostEventSymbol = "PASS5"
 	OMSTransactionObject.Quantity = 10
 	OMSTransactionObject.Price = 8.88
-	OMSTransactionObject.Factor = 0
+	OMSTransactionObject.EventFactor = 0
 
 	OMSTransactionObject = events.Basic(OMSTransactionObject)
 

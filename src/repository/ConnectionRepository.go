@@ -33,7 +33,7 @@ func (db *DatabaseConnection) connect() {
 		//TODO - Alterar log para Silent ao finalizar desenvolvimento
 		logger.Config{
 			SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
-			LogLevel:                  logger.Info,            // Log level
+			LogLevel:                  logger.Silent,          // Log level
 			IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
 			Colorful:                  true,                   // Disable color
 		},

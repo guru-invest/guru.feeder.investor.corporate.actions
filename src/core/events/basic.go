@@ -1,7 +1,10 @@
 package events
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
+	"time"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
@@ -12,13 +15,23 @@ import (
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
 func Basic(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
 
+	// TODO - Remover prints
+	x, _ := json.Marshal(OMSTransaction)
+	fmt.Println("Como era:")
+	fmt.Println(string(x))
+
 	// Quando for um evento de Atualização, o Fator deve ser 1, pois a Quantidade e o Preço não podem ser alterados.
-	if OMSTransaction.Event == singleton.New().Update {
-		OMSTransaction.Factor = 1
+	if OMSTransaction.EventName == singleton.New().Update {
+		OMSTransaction.EventFactor = 1
 	}
 
-	OMSTransaction.PostEventQuantity = int(float64(OMSTransaction.Quantity) / OMSTransaction.Factor)
-	OMSTransaction.PostEventPrice = utils.Truncate(OMSTransaction.Price*OMSTransaction.Factor, 2)
+	OMSTransaction.PostEventQuantity = int(float64(OMSTransaction.Quantity) / OMSTransaction.EventFactor)
+	OMSTransaction.PostEventPrice = utils.Truncate(OMSTransaction.Price*OMSTransaction.EventFactor, 2)
+
+	// TODO - Remover prints
+	y, _ := json.Marshal(OMSTransaction)
+	fmt.Println("Como ficou:")
+	fmt.Println(string(y))
 
 	return OMSTransaction
 }
@@ -43,4 +56,15 @@ func GetCorporateActions(symbol string) []mapper.CorporateAction {
 	}
 
 	return corporate_actions
+}
+
+func GetOMSTransaction(symbol, event string, begin_date, end_date time.Time) []mapper.OMSTransaction {
+	db := repository.OMSTransactionRepository{}
+	oms_transaction, err := db.GetOMSTransactions(symbol, event, begin_date, end_date)
+	if err != nil {
+		log.Println(err)
+		return []mapper.OMSTransaction{}
+	}
+
+	return oms_transaction
 }
