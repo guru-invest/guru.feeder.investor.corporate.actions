@@ -14,6 +14,9 @@ func Run() {
 	doWork()
 	elapsed := time.Since(start)
 	fmt.Printf("Processs took %s\n", elapsed)
+
+	// Esse sleep fica aqui para segura os ultimos updates acumulados
+	time.Sleep(time.Minute)
 }
 
 func doWork() {
@@ -26,7 +29,6 @@ func doWork() {
 
 		log.Printf("%d de %d Symbols foram analisados\n", currentSymbol, totalOfSymbols)
 		doBasicEvents(value.Name)
-
 		currentSymbol += 1
 
 	}
@@ -61,7 +63,8 @@ func doBasicEvents(symbol string) {
 
 		}
 
-		repository.UpdateOMSTransaction(OMSTransaction)
+		go repository.UpdateOMSTransaction(OMSTransaction)
+
 	}
 
 }
