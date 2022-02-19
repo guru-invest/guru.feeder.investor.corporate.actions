@@ -15,7 +15,7 @@ type OMSTransaction struct {
 	TradeDate time.Time `gorm:"column:trade_date"`
 
 	//Dados calculados com base nos eventos corporativos
-	PostEventQuantity int     `gorm:"column:post_event_quantity"`
+	PostEventQuantity float64 `gorm:"column:post_event_quantity"`
 	PostEventPrice    float64 `gorm:"column:post_event_price"`
 
 	// Dados do evento corporativo que estão na Financial

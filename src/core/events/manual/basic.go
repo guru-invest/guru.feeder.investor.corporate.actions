@@ -14,7 +14,7 @@ func ApplyCorporateAction(ManualTransaction mapper.ManualTransaction) mapper.Man
 		ManualTransaction.EventFactor = 1
 	}
 
-	ManualTransaction.PostEventQuantity = int(float64(ManualTransaction.Quantity) / ManualTransaction.EventFactor)
+	ManualTransaction.PostEventQuantity = float64(ManualTransaction.Quantity) / ManualTransaction.EventFactor
 	ManualTransaction.PostEventPrice = utils.Truncate(ManualTransaction.Price*ManualTransaction.EventFactor, 2)
 
 	return ManualTransaction

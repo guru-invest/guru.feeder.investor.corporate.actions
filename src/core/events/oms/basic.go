@@ -14,7 +14,7 @@ func ApplyCorporateAction(OMSTransaction mapper.OMSTransaction) mapper.OMSTransa
 		OMSTransaction.EventFactor = 1
 	}
 
-	OMSTransaction.PostEventQuantity = int(float64(OMSTransaction.Quantity) / OMSTransaction.EventFactor)
+	OMSTransaction.PostEventQuantity = float64(OMSTransaction.Quantity) / OMSTransaction.EventFactor
 	OMSTransaction.PostEventPrice = utils.Truncate(OMSTransaction.Price*OMSTransaction.EventFactor, 2)
 
 	return OMSTransaction

@@ -19,9 +19,9 @@ func TestBasicGrouping(t *testing.T) {
 
 	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
 
-	ExpectedQuantity := 1
+	ExpectedQuantity := 1.0
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
-		t.Errorf("PostEventQuantity: Esperado (%d), Recebido (%d)", ExpectedQuantity, OMSTransactionObject.PostEventQuantity)
+		t.Errorf("PostEventQuantity: Esperado (%f), Recebido (%f)", ExpectedQuantity, OMSTransactionObject.PostEventQuantity)
 	}
 
 	ExpectedPrice := 16.65
@@ -42,9 +42,9 @@ func TestBasicUnfolding(t *testing.T) {
 
 	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
 
-	ExpectedQuantity := 25
+	ExpectedQuantity := 25.0500000004008
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
-		t.Errorf("PostEventQuantity: Esperado (%d), Recebido (%d)", ExpectedQuantity, OMSTransactionObject.PostEventQuantity)
+		t.Errorf("PostEventQuantity: Esperado (%f), Recebido (%f)", ExpectedQuantity, OMSTransactionObject.PostEventQuantity)
 	}
 
 	ExpectedPrice := 1.82
@@ -66,9 +66,9 @@ func TestBasicUpdate(t *testing.T) {
 
 	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
 
-	ExpectedQuantity := 10
+	ExpectedQuantity := 10.0
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
-		t.Errorf("PostEventQuantity: Esperado (%d), Recebido (%d)", ExpectedQuantity, OMSTransactionObject.PostEventQuantity)
+		t.Errorf("PostEventQuantity: Esperado (%f), Recebido (%f)", ExpectedQuantity, OMSTransactionObject.PostEventQuantity)
 	}
 
 	ExpectedPrice := 8.88

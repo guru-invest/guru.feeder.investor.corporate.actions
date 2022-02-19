@@ -14,7 +14,7 @@ func ApplyCorporateAction(CEITransaction mapper.CEITransaction) mapper.CEITransa
 		CEITransaction.EventFactor = 1
 	}
 
-	CEITransaction.PostEventQuantity = int(float64(CEITransaction.Quantity) / CEITransaction.EventFactor)
+	CEITransaction.PostEventQuantity = float64(CEITransaction.Quantity) / CEITransaction.EventFactor
 	CEITransaction.PostEventPrice = utils.Truncate(CEITransaction.Price*CEITransaction.EventFactor, 2)
 
 	return CEITransaction

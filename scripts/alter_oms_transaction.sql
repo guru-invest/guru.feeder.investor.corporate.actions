@@ -1,6 +1,6 @@
 ALTER TABLE wallet.oms_transactions ADD post_event_symbol text NULL ;
 ALTER TABLE wallet.oms_transactions ADD event_factor numeric default 1;
-ALTER TABLE wallet.oms_transactions ADD post_event_quantity int4 NULL;
+ALTER TABLE wallet.oms_transactions ADD post_event_quantity numeric NULL;
 ALTER TABLE wallet.oms_transactions ADD post_event_price numeric NULL;
 ALTER TABLE wallet.oms_transactions ADD event_date timestamp default '2001-01-01';
 ALTER TABLE wallet.oms_transactions ADD event_name text default 'PADRAO';
