@@ -1,9 +1,9 @@
-package events
+package oms
 
 import (
 	"testing"
 
-	"github.com/guru-invest/guru.corporate.actions/src/core/events"
+	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.corporate.actions/src/singleton"
 )
@@ -17,7 +17,7 @@ func TestBasicGrouping(t *testing.T) {
 	OMSTransactionObject.Price = 3.33
 	OMSTransactionObject.EventFactor = 5
 
-	OMSTransactionObject = events.ApplyCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
 
 	ExpectedQuantity := 1
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
@@ -40,7 +40,7 @@ func TestBasicUnfolding(t *testing.T) {
 	OMSTransactionObject.Price = 9.13
 	OMSTransactionObject.EventFactor = 0.1996007984
 
-	OMSTransactionObject = events.ApplyCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
 
 	ExpectedQuantity := 25
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
@@ -64,7 +64,7 @@ func TestBasicUpdate(t *testing.T) {
 	OMSTransactionObject.Price = 8.88
 	OMSTransactionObject.EventFactor = 0
 
-	OMSTransactionObject = events.ApplyCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
 
 	ExpectedQuantity := 10
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {

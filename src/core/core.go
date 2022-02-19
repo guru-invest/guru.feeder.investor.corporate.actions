@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/core/events"
+	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
 	"github.com/guru-invest/guru.corporate.actions/src/repository"
 )
 
@@ -28,14 +28,14 @@ func doWork() {
 	for _, value := range Symbols {
 
 		log.Printf("%d de %d Symbols foram analisados\n", currentSymbol, totalOfSymbols)
-		doBasicEvents(value.Name)
+		doBasicOMSEvents(value.Name)
 		currentSymbol += 1
 
 	}
 
 }
 
-func doBasicEvents(symbol string) {
+func doBasicOMSEvents(symbol string) {
 	CorporateActions := repository.GetCorporateActions(symbol)
 	for _, value2 := range CorporateActions {
 		symbol := symbol
@@ -49,7 +49,7 @@ func doBasicEvents(symbol string) {
 				value3.PostEventSymbol = value3.Symbol
 				value3.EventFactor = 1
 				value3.EventDate, _ = time.Parse("2006-01-02", "2001-01-01")
-				OMSTransaction[index] = events.ApplyCorporateAction(value3)
+				OMSTransaction[index] = oms.ApplyCorporateAction(value3)
 
 			} else {
 
@@ -59,7 +59,7 @@ func doBasicEvents(symbol string) {
 				value3.EventDate = value2.ComDate
 			}
 
-			OMSTransaction[index] = events.ApplyCorporateAction(value3)
+			OMSTransaction[index] = oms.ApplyCorporateAction(value3)
 
 		}
 

@@ -1,4 +1,4 @@
-package events
+package oms
 
 import (
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
