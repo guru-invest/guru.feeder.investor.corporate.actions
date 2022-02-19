@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/guru-invest/guru.corporate.actions/src/core/events/cei"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
 	"github.com/guru-invest/guru.corporate.actions/src/repository"
@@ -34,6 +35,7 @@ func doWork() {
 
 		go doBasicOMSEvents(value.Name, finished)
 		go doBasicManualEvents(value.Name, finished)
+		go doBasicCEIEvents(value.Name, finished)
 
 		<-finished
 		currentSymbol += 1
@@ -105,6 +107,40 @@ func doBasicManualEvents(symbol string, finished chan bool) {
 		}
 
 		go repository.UpdateManualTransaction(ManualTransaction)
+
+	}
+	finished <- true
+}
+
+func doBasicCEIEvents(symbol string, finished chan bool) {
+	CorporateActions := repository.GetCorporateActions(symbol)
+	for _, value2 := range CorporateActions {
+		symbol := symbol
+
+		CEITransaction := repository.GetCEITransaction(symbol)
+
+		for index, value3 := range CEITransaction {
+
+			if value3.TradeDate.After(value2.ComDate) {
+				value3.EventName = "PADRAO"
+				value3.PostEventSymbol = value3.Symbol
+				value3.EventFactor = 1
+				value3.EventDate, _ = time.Parse("2006-01-02", "2001-01-01")
+				CEITransaction[index] = cei.ApplyCorporateAction(value3)
+
+			} else {
+
+				value3.EventName = value2.Description
+				value3.PostEventSymbol = value2.TargetTicker
+				value3.EventFactor = value2.CalculatedFactor
+				value3.EventDate = value2.ComDate
+			}
+
+			CEITransaction[index] = cei.ApplyCorporateAction(value3)
+
+		}
+
+		go repository.UpdateCEITransaction(CEITransaction)
 
 	}
 	finished <- true
