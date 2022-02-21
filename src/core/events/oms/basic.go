@@ -7,7 +7,7 @@ import (
 )
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
-func ApplyCorporateAction(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
+func ApplyBasicCorporateAction(OMSTransaction mapper.OMSTransaction) mapper.OMSTransaction {
 
 	// Quando for um evento de Atualização, o Fator deve ser 1, pois a Quantidade e o Preço não podem ser alterados.
 	if OMSTransaction.EventName == singleton.New().Update {

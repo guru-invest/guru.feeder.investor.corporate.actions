@@ -17,7 +17,7 @@ func TestBasicGrouping(t *testing.T) {
 	OMSTransactionObject.Price = 3.33
 	OMSTransactionObject.EventFactor = 5
 
-	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject)
 
 	ExpectedQuantity := 1.0
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
@@ -40,7 +40,7 @@ func TestBasicUnfolding(t *testing.T) {
 	OMSTransactionObject.Price = 9.13
 	OMSTransactionObject.EventFactor = 0.1996007984
 
-	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject)
 
 	ExpectedQuantity := 25.0500000004008
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
@@ -64,7 +64,7 @@ func TestBasicUpdate(t *testing.T) {
 	OMSTransactionObject.Price = 8.88
 	OMSTransactionObject.EventFactor = 0
 
-	OMSTransactionObject = oms.ApplyCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject)
 
 	ExpectedQuantity := 10.0
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
