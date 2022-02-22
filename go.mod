@@ -3,7 +3,6 @@ module github.com/guru-invest/guru.corporate.actions
 go 1.17
 
 require (
-	github.com/google/go-cmp v0.5.6
 	github.com/guru-invest/guru.framework v0.0.0-20211223124941-505e4113d68b
 	github.com/sirupsen/logrus v1.8.1
 	gorm.io/driver/postgres v1.2.3
