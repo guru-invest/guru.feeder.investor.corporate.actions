@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -36,14 +35,9 @@ func doApplyBasicEvents() {
 func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	OMSTransaction := repository.GetOMSTransaction()
-
-	totalOfTransaction := len(OMSTransaction)
-	currentTransaction := 0
-
 	OMSTransactionPersisterObject := []mapper.OMSTransaction{}
 
 	for _, transaction := range OMSTransaction {
-		log.Printf("%d de %d tansações de OMS foram analisados\n", currentTransaction, totalOfTransaction)
 
 		for _, corporate_action := range CorporateActions[transaction.Symbol] {
 
@@ -61,10 +55,7 @@ func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 				OMSTransactionPersisterObject = append(OMSTransactionPersisterObject, oms.ApplyBasicCorporateAction(transaction))
 				continue
 			}
-
 		}
-		currentTransaction += 1
-
 	}
 
 	repository.UpdateOMSTransaction(OMSTransactionPersisterObject)
@@ -73,14 +64,9 @@ func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	ManualTransaction := repository.GetManualTransaction()
-
-	totalOfTransaction := len(ManualTransaction)
-	currentTransaction := 0
-
 	ManualTransactionPersisterObject := []mapper.ManualTransaction{}
 
 	for _, transaction := range ManualTransaction {
-		log.Printf("%d de %d tansações de Manual foram analisados\n", currentTransaction, totalOfTransaction)
 
 		for _, corporate_action := range CorporateActions[transaction.Symbol] {
 
@@ -98,10 +84,7 @@ func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
 				ManualTransactionPersisterObject = append(ManualTransactionPersisterObject, manual.ApplyBasicCorporateAction(transaction))
 				continue
 			}
-
 		}
-		currentTransaction += 1
-
 	}
 
 	repository.UpdateManualTransaction(ManualTransactionPersisterObject)
@@ -110,14 +93,9 @@ func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
 func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	CEITransaction := repository.GetCEITransaction()
-
-	totalOfTransaction := len(CEITransaction)
-	currentTransaction := 0
-
 	CEITransactionPersisterObject := []mapper.CEITransaction{}
 
 	for _, transaction := range CEITransaction {
-		log.Printf("%d de %d tansações de CEI foram analisados\n", currentTransaction, totalOfTransaction)
 
 		for _, corporate_action := range CorporateActions[transaction.Symbol] {
 
@@ -135,10 +113,7 @@ func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
 				CEITransactionPersisterObject = append(CEITransactionPersisterObject, cei.ApplyBasicCorporateAction(transaction))
 				continue
 			}
-
 		}
-		currentTransaction += 1
-
 	}
 
 	repository.UpdateCEITransaction(CEITransactionPersisterObject)
