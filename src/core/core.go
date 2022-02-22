@@ -5,17 +5,19 @@ import (
 	"log"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/cei"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
 	"github.com/guru-invest/guru.corporate.actions/src/repository"
+	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.corporate.actions/src/singleton"
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
 func Run() {
 	start := time.Now()
-	doWork()
+	doApplyBasicEvents()
 	elapsed := time.Since(start)
 	fmt.Printf("Processs took %s\n", elapsed)
 
@@ -23,7 +25,7 @@ func Run() {
 	time.Sleep(time.Minute)
 }
 
-func doWork() {
+func doApplyBasicEvents() {
 
 	Symbols := repository.GetSymbols()
 	totalOfSymbols := len(Symbols)
@@ -35,9 +37,9 @@ func doWork() {
 
 		finished := make(chan bool)
 
-		go doApplyOMSEvents(value.Name, finished)
-		go doBasicManualEvents(value.Name, finished)
-		go doBasicCEIEvents(value.Name, finished)
+		go doBasicOMSEvents(value.Name, finished)
+		// go doBasicManualEvents(value.Name, finished)
+		// go doBasicCEIEvents(value.Name, finished)
 
 		<-finished
 		currentSymbol += 1
@@ -46,27 +48,25 @@ func doWork() {
 
 }
 
-func doApplyOMSEvents(symbol string, finished chan bool) {
+func doBasicOMSEvents(symbol string, finished chan bool) {
 	CorporateActions := repository.GetCorporateActions(symbol)
+	OMSTransactionBkp := []mapper.OMSTransaction{}
+
 	for _, value2 := range CorporateActions {
 		symbol := symbol
 
 		OMSTransaction := repository.GetOMSTransaction(symbol)
 
 		for index, value3 := range OMSTransaction {
+			OMSTransactionBkp = append(OMSTransactionBkp, value3)
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
 			if value3.TradeDate.After(value2.ComDate) {
-				value3.EventName = "PADRAO"
-				value3.PostEventSymbol = value3.Symbol
-				value3.EventFactor = 1
-				value3.EventDate, _ = time.Parse("2006-01-02", "2001-01-01")
-				OMSTransaction[index] = oms.ApplyBasicCorporateAction(value3)
 				continue
 			}
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value3.EventName) {
+			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value2.Description) {
 				value3.EventName = value2.Description
 				value3.PostEventSymbol = value2.TargetTicker
 				value3.EventFactor = value2.CalculatedFactor
@@ -75,19 +75,21 @@ func doApplyOMSEvents(symbol string, finished chan bool) {
 				continue
 			}
 
-			// Se o Event name for de JRS Cap Proprio , Dividendo ou Rendimento, aplica eventos corporativos de proventos em dinheiro
-			if utils.Contains([]string{singleton.New().InterestOnEquity, singleton.New().Dividend, singleton.New().Income}, value3.EventName) {
-				value3.EventName = value2.Description
-				value3.PostEventSymbol = value2.TargetTicker
-				value3.EventFactor = value2.CalculatedFactor
-				value3.EventDate = value2.ComDate
-				OMSTransaction[index] = oms.ApplyCashProceedsCorporateAction(value3)
-				continue
-			}
+			// // Se o Event name for de JRS Cap Proprio , Dividendo ou Rendimento, aplica eventos corporativos de proventos em dinheiro
+			// if utils.Contains([]string{singleton.New().InterestOnEquity, singleton.New().Dividend, singleton.New().Income}, value3.EventName) {
+			// 	value3.EventName = value2.Description
+			// 	value3.PostEventSymbol = value2.TargetTicker
+			// 	value3.EventFactor = value2.CalculatedFactor
+			// 	value3.EventDate = value2.ComDate
+			// 	OMSTransaction[index] = oms.ApplyCashProceedsCorporateAction(value3)
+			// 	continue
+			// }
 
 		}
 
-		go repository.UpdateOMSTransaction(OMSTransaction)
+		if !cmp.Equal(OMSTransactionBkp, OMSTransaction) {
+			go repository.UpdateOMSTransaction(OMSTransaction)
+		}
 
 	}
 	finished <- true
