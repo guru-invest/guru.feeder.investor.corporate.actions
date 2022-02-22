@@ -10,8 +10,6 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
 	"github.com/guru-invest/guru.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
-	"github.com/guru-invest/guru.corporate.actions/src/singleton"
-	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
 var wg sync.WaitGroup
@@ -47,7 +45,7 @@ func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 			}
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, corporate_action.Description) {
+			if corporate_action.IsBasic() {
 				transaction.EventName = corporate_action.Description
 				transaction.PostEventSymbol = corporate_action.TargetTicker
 				transaction.EventFactor = corporate_action.CalculatedFactor
@@ -76,7 +74,7 @@ func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
 			}
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, corporate_action.Description) {
+			if corporate_action.IsBasic() {
 				transaction.EventName = corporate_action.Description
 				transaction.PostEventSymbol = corporate_action.TargetTicker
 				transaction.EventFactor = corporate_action.CalculatedFactor
@@ -105,7 +103,7 @@ func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
 			}
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, corporate_action.Description) {
+			if corporate_action.IsBasic() {
 				transaction.EventName = corporate_action.Description
 				transaction.PostEventSymbol = corporate_action.TargetTicker
 				transaction.EventFactor = corporate_action.CalculatedFactor

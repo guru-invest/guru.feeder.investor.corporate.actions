@@ -1,6 +1,15 @@
 package mapper
 
-import "time"
+import (
+	"time"
+
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.corporate.actions/src/utils"
+)
+
+func (h CorporateAction) IsBasic() bool {
+	return utils.Contains([]string{constants.Grouping, constants.Unfolding, constants.Update}, h.Description)
+}
 
 func (CorporateAction) TableName() string {
 	return "financial.corporate_actions"

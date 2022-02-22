@@ -4,8 +4,8 @@ import (
 	"log"
 	"sync"
 
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
-	"github.com/guru-invest/guru.corporate.actions/src/singleton"
 )
 
 type CorporateActionRepository struct {
@@ -20,8 +20,8 @@ func (h CorporateActionRepository) getAllCorporateActions() ([]mapper.CorporateA
 	err := h._connection._databaseConnection.
 		Select("ticker, description, com_date, target_ticker, calculated_factor").
 		Order("com_date desc").
-		Find(&corporate_action, "com_date > current_timestamp - interval '5 years' and description in (?, ?, ?)",
-			singleton.New().Update, singleton.New().Grouping, singleton.New().Unfolding).
+		Find(&corporate_action, "com_date > current_timestamp - interval '5 years' and description in (?, ?, ?, ?, ?, ?)",
+			constants.Update, constants.Grouping, constants.Unfolding, constants.InterestOnEquity, constants.Dividend, constants.Income).
 		Error
 
 	if err != nil {
