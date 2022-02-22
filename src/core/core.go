@@ -38,8 +38,8 @@ func doApplyBasicEvents() {
 		finished := make(chan bool)
 
 		go doBasicOMSEvents(value.Name, finished)
-		// go doBasicManualEvents(value.Name, finished)
-		// go doBasicCEIEvents(value.Name, finished)
+		go doBasicManualEvents(value.Name, finished)
+		go doBasicCEIEvents(value.Name, finished)
 
 		<-finished
 		currentSymbol += 1
@@ -75,16 +75,6 @@ func doBasicOMSEvents(symbol string, finished chan bool) {
 				continue
 			}
 
-			// // Se o Event name for de JRS Cap Proprio , Dividendo ou Rendimento, aplica eventos corporativos de proventos em dinheiro
-			// if utils.Contains([]string{singleton.New().InterestOnEquity, singleton.New().Dividend, singleton.New().Income}, value3.EventName) {
-			// 	value3.EventName = value2.Description
-			// 	value3.PostEventSymbol = value2.TargetTicker
-			// 	value3.EventFactor = value2.CalculatedFactor
-			// 	value3.EventDate = value2.ComDate
-			// 	OMSTransaction[index] = oms.ApplyCashProceedsCorporateAction(value3)
-			// 	continue
-			// }
-
 		}
 
 		if !cmp.Equal(OMSTransactionBkp, OMSTransaction) {
@@ -97,33 +87,35 @@ func doBasicOMSEvents(symbol string, finished chan bool) {
 
 func doBasicManualEvents(symbol string, finished chan bool) {
 	CorporateActions := repository.GetCorporateActions(symbol)
+	ManualTransactionBkp := []mapper.ManualTransaction{}
+
 	for _, value2 := range CorporateActions {
 		symbol := symbol
 
 		ManualTransaction := repository.GetManualTransaction(symbol)
 
 		for index, value3 := range ManualTransaction {
+			ManualTransactionBkp = append(ManualTransactionBkp, value3)
 
+			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
 			if value3.TradeDate.After(value2.ComDate) {
-				value3.EventName = "PADRAO"
-				value3.PostEventSymbol = value3.Symbol
-				value3.EventFactor = 1
-				value3.EventDate, _ = time.Parse("2006-01-02", "2001-01-01")
-				ManualTransaction[index] = manual.ApplyCorporateAction(value3)
+				continue
+			}
 
-			} else {
-
+			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value2.Description) {
 				value3.EventName = value2.Description
 				value3.PostEventSymbol = value2.TargetTicker
 				value3.EventFactor = value2.CalculatedFactor
 				value3.EventDate = value2.ComDate
+				ManualTransaction[index] = manual.ApplyBasicCorporateAction(value3)
+				continue
 			}
-
-			ManualTransaction[index] = manual.ApplyCorporateAction(value3)
 
 		}
 
-		go repository.UpdateManualTransaction(ManualTransaction)
+		if !cmp.Equal(ManualTransactionBkp, ManualTransaction) {
+			go repository.UpdateManualTransaction(ManualTransaction)
+		}
 
 	}
 	finished <- true
@@ -131,33 +123,36 @@ func doBasicManualEvents(symbol string, finished chan bool) {
 
 func doBasicCEIEvents(symbol string, finished chan bool) {
 	CorporateActions := repository.GetCorporateActions(symbol)
+	CEITransactionBkp := []mapper.CEITransaction{}
+
 	for _, value2 := range CorporateActions {
 		symbol := symbol
 
 		CEITransaction := repository.GetCEITransaction(symbol)
 
 		for index, value3 := range CEITransaction {
+			CEITransactionBkp = append(CEITransactionBkp, value3)
 
+			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
 			if value3.TradeDate.After(value2.ComDate) {
-				value3.EventName = "PADRAO"
-				value3.PostEventSymbol = value3.Symbol
-				value3.EventFactor = 1
-				value3.EventDate, _ = time.Parse("2006-01-02", "2001-01-01")
-				CEITransaction[index] = cei.ApplyCorporateAction(value3)
+				continue
 
-			} else {
+			}
 
+			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value2.Description) {
 				value3.EventName = value2.Description
 				value3.PostEventSymbol = value2.TargetTicker
 				value3.EventFactor = value2.CalculatedFactor
 				value3.EventDate = value2.ComDate
+				CEITransaction[index] = cei.ApplyBasicCorporateAction(value3)
+				continue
 			}
-
-			CEITransaction[index] = cei.ApplyCorporateAction(value3)
 
 		}
 
-		go repository.UpdateCEITransaction(CEITransaction)
+		if !cmp.Equal(CEITransactionBkp, CEITransaction) {
+			go repository.UpdateCEITransaction(CEITransaction)
+		}
 
 	}
 	finished <- true

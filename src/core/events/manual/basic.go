@@ -7,7 +7,7 @@ import (
 )
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
-func ApplyCorporateAction(ManualTransaction mapper.ManualTransaction) mapper.ManualTransaction {
+func ApplyBasicCorporateAction(ManualTransaction mapper.ManualTransaction) mapper.ManualTransaction {
 
 	// Quando for um evento de Atualização, o Fator deve ser 1, pois a Quantidade e o Preço não podem ser alterados.
 	if ManualTransaction.EventName == singleton.New().Update {
