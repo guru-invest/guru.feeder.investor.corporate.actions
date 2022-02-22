@@ -10,7 +10,7 @@ type OMSTransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h OMSTransactionRepository) getOMSTransactions(symbol string) ([]mapper.OMSTransaction, error) {
+func (h OMSTransactionRepository) getOMSTransactions() ([]mapper.OMSTransaction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
@@ -18,8 +18,7 @@ func (h OMSTransactionRepository) getOMSTransactions(symbol string) ([]mapper.OM
 	err := h._connection._databaseConnection.
 		Select("id, symbol, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Order("trade_date asc").
-		Find(&oms_transaction, "symbol = ?",
-			symbol).
+		Find(&oms_transaction).
 		Error
 
 	if err != nil {
@@ -41,9 +40,9 @@ func (h OMSTransactionRepository) updateOMSTransactions(OMSTransaction []mapper.
 	}
 }
 
-func GetOMSTransaction(symbol string) []mapper.OMSTransaction {
+func GetOMSTransaction() []mapper.OMSTransaction {
 	db := OMSTransactionRepository{}
-	oms_transaction, err := db.getOMSTransactions(symbol)
+	oms_transaction, err := db.getOMSTransactions()
 	if err != nil {
 		log.Println(err)
 		return []mapper.OMSTransaction{}

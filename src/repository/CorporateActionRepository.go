@@ -45,7 +45,7 @@ func getAllCorporateActionsMap() []mapper.CorporateAction {
 var mutex = &sync.Mutex{}
 var corporateActionsMap = map[string][]mapper.CorporateAction{}
 
-func GetCorporateActions(symbol string) []mapper.CorporateAction {
+func GetCorporateActions() map[string][]mapper.CorporateAction {
 
 	if len(corporateActionsMap) == 0 {
 		allCorporateActions := getAllCorporateActionsMap()
@@ -54,9 +54,8 @@ func GetCorporateActions(symbol string) []mapper.CorporateAction {
 			corporateActionsMap[value.Symbol] = append(corporateActionsMap[value.Symbol], value)
 			mutex.Unlock()
 		}
-		// TODO - Porque quando o map não existe, ele não passa no return de fora ?
-		return corporateActionsMap[symbol]
-	}
 
-	return corporateActionsMap[symbol]
+		return corporateActionsMap
+	}
+	return corporateActionsMap
 }

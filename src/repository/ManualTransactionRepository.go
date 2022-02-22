@@ -10,7 +10,7 @@ type ManualTransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h ManualTransactionRepository) getManualTransactions(symbol string) ([]mapper.ManualTransaction, error) {
+func (h ManualTransactionRepository) getManualTransactions() ([]mapper.ManualTransaction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
@@ -18,8 +18,7 @@ func (h ManualTransactionRepository) getManualTransactions(symbol string) ([]map
 	err := h._connection._databaseConnection.
 		Select("id, symbol, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Order("trade_date asc").
-		Find(&manual_transaction, "symbol = ?",
-			symbol).
+		Find(&manual_transaction).
 		Error
 
 	if err != nil {
@@ -41,9 +40,9 @@ func (h ManualTransactionRepository) updateManualTransactions(ManualTransaction 
 	}
 }
 
-func GetManualTransaction(symbol string) []mapper.ManualTransaction {
+func GetManualTransaction() []mapper.ManualTransaction {
 	db := ManualTransactionRepository{}
-	manual_transaction, err := db.getManualTransactions(symbol)
+	manual_transaction, err := db.getManualTransactions()
 	if err != nil {
 		log.Println(err)
 		return []mapper.ManualTransaction{}

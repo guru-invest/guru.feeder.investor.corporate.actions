@@ -3,9 +3,9 @@ package core
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/cei"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
@@ -15,145 +15,131 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
+var wg sync.WaitGroup
+
 func Run() {
 	start := time.Now()
 	doApplyBasicEvents()
 	elapsed := time.Since(start)
 	fmt.Printf("Processs took %s\n", elapsed)
-
-	// Esse sleep fica aqui para segura os ultimos updates acumulados
-	time.Sleep(time.Minute)
 }
 
 func doApplyBasicEvents() {
-
-	Symbols := repository.GetSymbols()
-	totalOfSymbols := len(Symbols)
-	currentSymbol := 0
-
-	for _, value := range Symbols {
-
-		log.Printf("%d de %d Symbols foram analisados\n", currentSymbol, totalOfSymbols)
-
-		finished := make(chan bool)
-
-		go doBasicOMSEvents(value.Name, finished)
-		go doBasicManualEvents(value.Name, finished)
-		go doBasicCEIEvents(value.Name, finished)
-
-		<-finished
-		currentSymbol += 1
-
-	}
-
+	CorporateActions := repository.GetCorporateActions()
+	wg.Add(3)
+	go doBasicOMSEvents(CorporateActions)
+	go doBasicManualEvents(CorporateActions)
+	go doBasicCEIEvents(CorporateActions)
+	wg.Wait()
 }
 
-func doBasicOMSEvents(symbol string, finished chan bool) {
-	CorporateActions := repository.GetCorporateActions(symbol)
-	OMSTransactionBkp := []mapper.OMSTransaction{}
+func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
+	defer wg.Done()
+	OMSTransaction := repository.GetOMSTransaction()
 
-	for _, value2 := range CorporateActions {
-		symbol := symbol
+	totalOfTransaction := len(OMSTransaction)
+	currentTransaction := 0
 
-		OMSTransaction := repository.GetOMSTransaction(symbol)
+	OMSTransactionPersisterObject := []mapper.OMSTransaction{}
 
-		for index, value3 := range OMSTransaction {
-			OMSTransactionBkp = append(OMSTransactionBkp, value3)
+	for _, transaction := range OMSTransaction {
+		log.Printf("%d de %d tansações de OMS foram analisados\n", currentTransaction, totalOfTransaction)
+
+		for _, corporate_action := range CorporateActions[transaction.Symbol] {
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
-			if value3.TradeDate.After(value2.ComDate) {
+			if transaction.TradeDate.After(corporate_action.ComDate) {
 				continue
 			}
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value2.Description) {
-				value3.EventName = value2.Description
-				value3.PostEventSymbol = value2.TargetTicker
-				value3.EventFactor = value2.CalculatedFactor
-				value3.EventDate = value2.ComDate
-				OMSTransaction[index] = oms.ApplyBasicCorporateAction(value3)
+			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, corporate_action.Description) {
+				transaction.EventName = corporate_action.Description
+				transaction.PostEventSymbol = corporate_action.TargetTicker
+				transaction.EventFactor = corporate_action.CalculatedFactor
+				transaction.EventDate = corporate_action.ComDate
+				OMSTransactionPersisterObject = append(OMSTransactionPersisterObject, oms.ApplyBasicCorporateAction(transaction))
 				continue
 			}
 
 		}
-
-		if !cmp.Equal(OMSTransactionBkp, OMSTransaction) {
-			go repository.UpdateOMSTransaction(OMSTransaction)
-		}
+		currentTransaction += 1
 
 	}
-	finished <- true
+
+	repository.UpdateOMSTransaction(OMSTransactionPersisterObject)
 }
 
-func doBasicManualEvents(symbol string, finished chan bool) {
-	CorporateActions := repository.GetCorporateActions(symbol)
-	ManualTransactionBkp := []mapper.ManualTransaction{}
+func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
+	defer wg.Done()
+	ManualTransaction := repository.GetManualTransaction()
 
-	for _, value2 := range CorporateActions {
-		symbol := symbol
+	totalOfTransaction := len(ManualTransaction)
+	currentTransaction := 0
 
-		ManualTransaction := repository.GetManualTransaction(symbol)
+	ManualTransactionPersisterObject := []mapper.ManualTransaction{}
 
-		for index, value3 := range ManualTransaction {
-			ManualTransactionBkp = append(ManualTransactionBkp, value3)
+	for _, transaction := range ManualTransaction {
+		log.Printf("%d de %d tansações de Manual foram analisados\n", currentTransaction, totalOfTransaction)
+
+		for _, corporate_action := range CorporateActions[transaction.Symbol] {
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
-			if value3.TradeDate.After(value2.ComDate) {
+			if transaction.TradeDate.After(corporate_action.ComDate) {
 				continue
 			}
 
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value2.Description) {
-				value3.EventName = value2.Description
-				value3.PostEventSymbol = value2.TargetTicker
-				value3.EventFactor = value2.CalculatedFactor
-				value3.EventDate = value2.ComDate
-				ManualTransaction[index] = manual.ApplyBasicCorporateAction(value3)
+			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
+			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, corporate_action.Description) {
+				transaction.EventName = corporate_action.Description
+				transaction.PostEventSymbol = corporate_action.TargetTicker
+				transaction.EventFactor = corporate_action.CalculatedFactor
+				transaction.EventDate = corporate_action.ComDate
+				ManualTransactionPersisterObject = append(ManualTransactionPersisterObject, manual.ApplyBasicCorporateAction(transaction))
 				continue
 			}
 
 		}
-
-		if !cmp.Equal(ManualTransactionBkp, ManualTransaction) {
-			go repository.UpdateManualTransaction(ManualTransaction)
-		}
+		currentTransaction += 1
 
 	}
-	finished <- true
+
+	repository.UpdateManualTransaction(ManualTransactionPersisterObject)
 }
 
-func doBasicCEIEvents(symbol string, finished chan bool) {
-	CorporateActions := repository.GetCorporateActions(symbol)
-	CEITransactionBkp := []mapper.CEITransaction{}
+func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
+	defer wg.Done()
+	CEITransaction := repository.GetCEITransaction()
 
-	for _, value2 := range CorporateActions {
-		symbol := symbol
+	totalOfTransaction := len(CEITransaction)
+	currentTransaction := 0
 
-		CEITransaction := repository.GetCEITransaction(symbol)
+	CEITransactionPersisterObject := []mapper.CEITransaction{}
 
-		for index, value3 := range CEITransaction {
-			CEITransactionBkp = append(CEITransactionBkp, value3)
+	for _, transaction := range CEITransaction {
+		log.Printf("%d de %d tansações de CEI foram analisados\n", currentTransaction, totalOfTransaction)
+
+		for _, corporate_action := range CorporateActions[transaction.Symbol] {
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
-			if value3.TradeDate.After(value2.ComDate) {
+			if transaction.TradeDate.After(corporate_action.ComDate) {
 				continue
-
 			}
 
-			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, value2.Description) {
-				value3.EventName = value2.Description
-				value3.PostEventSymbol = value2.TargetTicker
-				value3.EventFactor = value2.CalculatedFactor
-				value3.EventDate = value2.ComDate
-				CEITransaction[index] = cei.ApplyBasicCorporateAction(value3)
+			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
+			if utils.Contains([]string{singleton.New().Grouping, singleton.New().Unfolding, singleton.New().Update}, corporate_action.Description) {
+				transaction.EventName = corporate_action.Description
+				transaction.PostEventSymbol = corporate_action.TargetTicker
+				transaction.EventFactor = corporate_action.CalculatedFactor
+				transaction.EventDate = corporate_action.ComDate
+				CEITransactionPersisterObject = append(CEITransactionPersisterObject, cei.ApplyBasicCorporateAction(transaction))
 				continue
 			}
 
 		}
-
-		if !cmp.Equal(CEITransactionBkp, CEITransaction) {
-			go repository.UpdateCEITransaction(CEITransaction)
-		}
+		currentTransaction += 1
 
 	}
-	finished <- true
+
+	repository.UpdateCEITransaction(CEITransactionPersisterObject)
 }

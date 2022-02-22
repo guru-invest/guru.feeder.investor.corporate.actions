@@ -10,7 +10,7 @@ type CEITransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h CEITransactionRepository) getCEITransactions(symbol string) ([]mapper.CEITransaction, error) {
+func (h CEITransactionRepository) getCEITransactions() ([]mapper.CEITransaction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
@@ -18,8 +18,7 @@ func (h CEITransactionRepository) getCEITransactions(symbol string) ([]mapper.CE
 	err := h._connection._databaseConnection.
 		Select("id, symbol, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Order("trade_date asc").
-		Find(&cei_transaction, "symbol = ?",
-			symbol).
+		Find(&cei_transaction).
 		Error
 
 	if err != nil {
@@ -41,9 +40,9 @@ func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.
 	}
 }
 
-func GetCEITransaction(symbol string) []mapper.CEITransaction {
+func GetCEITransaction() []mapper.CEITransaction {
 	db := CEITransactionRepository{}
-	cei_transaction, err := db.getCEITransactions(symbol)
+	cei_transaction, err := db.getCEITransactions()
 	if err != nil {
 		log.Println(err)
 		return []mapper.CEITransaction{}
