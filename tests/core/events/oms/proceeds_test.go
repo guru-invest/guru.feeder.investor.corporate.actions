@@ -20,77 +20,52 @@ func StrToDate(DateAsText string) time.Time {
 	return result
 }
 
+func newTransactionObject(symbol string, quantity int, price float64, trade_date time.Time) mapper.OMSTransaction {
+	result := mapper.OMSTransaction{}
+	result.Symbol = symbol
+	result.Quantity = quantity
+	result.Price = price
+	result.TradeDate = trade_date
+	return result
+}
+
+func newCorporateActionObject(description string, value float64, com_date time.Time) mapper.CorporateAction {
+	result := mapper.CorporateAction{}
+	result.Description = description
+	result.Value = value
+	result.ComDate = com_date
+	return result
+}
+
 func TestProceeds(t *testing.T) {
 
 	// Dados chave para identificação dos ativos por usuários
 	Customer := "fzVzgo8b"
-	Symbol_1 := "BIDI4"
 
 	// Mock de transações
 	OMSTransactionObjects := []mapper.OMSTransaction{}
-
-	OMSTransactionObject1 := mapper.OMSTransaction{}
-	OMSTransactionObject1.Symbol = Symbol_1
-	OMSTransactionObject1.Quantity = 3
-	OMSTransactionObject1.Price = 27.41
-	OMSTransactionObject1.TradeDate = StrToDate("2021-07-20 11:40:26")
-	OMSTransactionObjects = append(OMSTransactionObjects, OMSTransactionObject1)
-
-	OMSTransactionObject2 := mapper.OMSTransaction{}
-	OMSTransactionObject2.Symbol = Symbol_1
-	OMSTransactionObject2.Quantity = 5
-	OMSTransactionObject2.Price = 26.68
-	OMSTransactionObject2.TradeDate = StrToDate("2021-07-26 10:29:32")
-	OMSTransactionObjects = append(OMSTransactionObjects, OMSTransactionObject2)
-
-	OMSTransactionObject3 := mapper.OMSTransaction{}
-	OMSTransactionObject3.Symbol = Symbol_1
-	OMSTransactionObject3.Quantity = 29
-	OMSTransactionObject3.Price = 26.68
-	OMSTransactionObject3.TradeDate = StrToDate("2021-07-26 10:29:32")
-	OMSTransactionObjects = append(OMSTransactionObjects, OMSTransactionObject3)
-
-	OMSTransactionObject4 := mapper.OMSTransaction{}
-	OMSTransactionObject4.Symbol = Symbol_1
-	OMSTransactionObject4.Quantity = 1
-	OMSTransactionObject4.Price = 25.69
-	OMSTransactionObject4.TradeDate = StrToDate("2021-07-28 8:11:05")
-	OMSTransactionObjects = append(OMSTransactionObjects, OMSTransactionObject4)
-
-	OMSTransactionObject5 := mapper.OMSTransaction{}
-	OMSTransactionObject5.Symbol = Symbol_1
-	OMSTransactionObject5.Quantity = 1
-	OMSTransactionObject5.Price = 25.67
-	OMSTransactionObject5.TradeDate = StrToDate("2021-07-28 8:13:40")
-	OMSTransactionObjects = append(OMSTransactionObjects, OMSTransactionObject5)
-
-	OMSTransactionObject6 := mapper.OMSTransaction{}
-	OMSTransactionObject6.Symbol = Symbol_1
-	OMSTransactionObject6.Quantity = 20
-	OMSTransactionObject6.Price = 9.47
-	OMSTransactionObject6.TradeDate = StrToDate("2022-01-03 11:34:38")
-	OMSTransactionObjects = append(OMSTransactionObjects, OMSTransactionObject6)
-
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 3, 27.41, StrToDate("2021-07-20 11:40:26")))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 5, 26.68, StrToDate("2021-07-26 10:29:32")))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 29, 26.68, StrToDate("2021-07-26 10:29:32")))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.69, StrToDate("2021-07-28 8:11:05")))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.67, StrToDate("2021-07-28 8:13:40")))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 20, 9.47, StrToDate("2022-01-03 11:34:38")))
 	// Agrupamento das transações em um map com chave por usuário
 	OMSTransactions := map[string][]mapper.OMSTransaction{}
 	OMSTransactions[Customer] = OMSTransactionObjects
 
 	// Mock de eventos corporativos
 	CorporateActionObjects := []mapper.CorporateAction{}
-
-	CorporateActionObject1 := mapper.CorporateAction{}
-	CorporateActionObject1.ComDate = StrToDate("2021-07-22 0:00:00")
-	CorporateActionObject1.Value = 0.012084364
-	CorporateActionObject1.Description = "JRS CAP PROPRIO"
-	CorporateActionObjects = append(CorporateActionObjects, CorporateActionObject1)
-
+	CorporateActionObjects = append(CorporateActionObjects, newCorporateActionObject("JRS CAP PROPRIO", 0.012084364, StrToDate("2021-07-22 0:00:00")))
 	// Agrupamento dos eventos corporativos em um map com chave por symbol
 	CorporateActions := map[string][]mapper.CorporateAction{}
-	CorporateActions[Symbol_1] = CorporateActionObjects
+	CorporateActions["BIDI4"] = CorporateActionObjects
 
+	// Processamento
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
-	OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyCashProceedsCorporateAction(Customer, Symbol_1, OMSTransactions, CorporateActions)...)
+	OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyCashProceedsCorporateAction(Customer, "BIDI4", OMSTransactions, CorporateActions)...)
 
+	// Teste
 	ExpectedProceedsCount := 1
 	if len(OMSProceedPersisterObject) != ExpectedProceedsCount {
 		t.Errorf("TestProceeds Count: Esperado (%d), Recebido (%d)", ExpectedProceedsCount, len(OMSProceedPersisterObject))
