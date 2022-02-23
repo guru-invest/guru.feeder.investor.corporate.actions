@@ -3,15 +3,15 @@ package oms
 import (
 	"testing"
 
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
-	"github.com/guru-invest/guru.corporate.actions/src/singleton"
 )
 
 func TestBasicGrouping(t *testing.T) {
 
 	OMSTransactionObject := mapper.OMSTransaction{}
-	OMSTransactionObject.EventName = singleton.New().Grouping
+	OMSTransactionObject.EventName = constants.Grouping
 	OMSTransactionObject.Symbol = "PRIO3"
 	OMSTransactionObject.Quantity = 5
 	OMSTransactionObject.Price = 3.33
@@ -34,7 +34,7 @@ func TestBasicGrouping(t *testing.T) {
 func TestBasicUnfolding(t *testing.T) {
 
 	OMSTransactionObject := mapper.OMSTransaction{}
-	OMSTransactionObject.EventName = singleton.New().Unfolding
+	OMSTransactionObject.EventName = constants.Unfolding
 	OMSTransactionObject.Symbol = "ALUP4"
 	OMSTransactionObject.Quantity = 5
 	OMSTransactionObject.Price = 9.13
@@ -57,7 +57,7 @@ func TestBasicUnfolding(t *testing.T) {
 func TestBasicUpdate(t *testing.T) {
 
 	OMSTransactionObject := mapper.OMSTransaction{}
-	OMSTransactionObject.EventName = singleton.New().Update
+	OMSTransactionObject.EventName = constants.Update
 	OMSTransactionObject.Symbol = "PASS12"
 	OMSTransactionObject.PostEventSymbol = "PASS5"
 	OMSTransactionObject.Quantity = 10

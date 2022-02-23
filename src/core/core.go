@@ -22,11 +22,13 @@ func Run() {
 }
 
 func doApplyBasicEvents() {
-	CorporateActions := repository.GetCorporateActions()
-	wg.Add(3)
-	go doBasicOMSEvents(CorporateActions)
-	go doBasicManualEvents(CorporateActions)
-	go doBasicCEIEvents(CorporateActions)
+	CorporateActionsAsc := repository.GetCorporateActions("asc")
+	CorporateActionsDesc := repository.GetCorporateActions("desc")
+	wg.Add(4)
+	go doBasicOMSEvents(CorporateActionsDesc)
+	go doBasicManualEvents(CorporateActionsDesc)
+	go doBasicCEIEvents(CorporateActionsDesc)
+	go doProceedsOMSEvents(CorporateActionsAsc)
 	wg.Wait()
 }
 
@@ -115,4 +117,25 @@ func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	}
 
 	repository.UpdateCEITransaction(CEITransactionPersisterObject)
+}
+
+func doProceedsOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
+	defer wg.Done()
+	OMSTransactions := repository.GetAllOMSTransactions()
+	OMSCustomers := repository.GetCustomers()
+	OMSSymbols := repository.GetSymbols()
+	OMSProceedPersisterObject := []mapper.OMSProceeds{}
+	for _, customer := range OMSCustomers {
+
+		for _, symbol := range OMSSymbols {
+			OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyCashProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, CorporateActions)...)
+
+		}
+	}
+	// TODO - Validar bem os dados de proventos.
+	// O ideal seria fazer os Inserts com base em Symbols de um determinado customer.
+	// Mas fazer 1 select por customer é loucura. Demora demais.
+	// Validei com uns 20 symbols e parece estar tudo bem, mas vou manter esse todo para validar um pouco mais
+	repository.InsertOMSProceeds(OMSProceedPersisterObject)
+
 }

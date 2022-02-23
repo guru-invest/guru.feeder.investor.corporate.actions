@@ -32,7 +32,7 @@ func (db *DatabaseConnection) connect() {
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
-			LogLevel:                  logger.Warn,            // Log level
+			LogLevel:                  logger.Silent,          // Log level
 			IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
 			Colorful:                  true,                   // Disable color
 		},

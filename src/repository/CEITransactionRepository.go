@@ -28,6 +28,7 @@ func (h CEITransactionRepository) getCEITransactions() ([]mapper.CEITransaction,
 	return cei_transaction, nil
 }
 
+// TODO - Não deveria estar persistindo dados aqui no repository
 func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.CEITransaction) {
 	h._connection.connect()
 	defer h._connection.disconnect()

@@ -28,6 +28,7 @@ func (h ManualTransactionRepository) getManualTransactions() ([]mapper.ManualTra
 	return manual_transaction, nil
 }
 
+// TODO - Não deveria estar persistindo dados aqui no repository
 func (h ManualTransactionRepository) updateManualTransactions(ManualTransaction []mapper.ManualTransaction) {
 	h._connection.connect()
 	defer h._connection.disconnect()
