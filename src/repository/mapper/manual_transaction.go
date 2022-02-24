@@ -9,6 +9,7 @@ func (ManualTransaction) TableName() string {
 type ManualTransaction struct {
 	//Dados de transações
 	ID        int       `gorm:"column:id"`
+	BrokerID  float64   `gorm:"column:broker_id"`
 	Symbol    string    `gorm:"column:symbol"`
 	Quantity  float64   `gorm:"column:quantity"`
 	Price     float64   `gorm:"column:price"`

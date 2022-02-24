@@ -8,5 +8,5 @@ CREATE TABLE wallet.cei_proventos (
 	amount numeric NULL,
 	"date" timestamp NULL,
 	"event" text NULL,
-	CONSTRAINT oms_proventos_pkey PRIMARY KEY (id)
+	CONSTRAINT cei_proventos_pkey PRIMARY KEY (id)
 );
