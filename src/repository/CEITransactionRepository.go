@@ -16,7 +16,7 @@ func (h CEITransactionRepository) getCEITransactions() ([]mapper.CEITransaction,
 
 	var cei_transaction []mapper.CEITransaction
 	err := h._connection._databaseConnection.
-		Select("id, symbol, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Select("id, symbol, broker_id, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Order("trade_date asc").
 		Find(&cei_transaction).
 		Error

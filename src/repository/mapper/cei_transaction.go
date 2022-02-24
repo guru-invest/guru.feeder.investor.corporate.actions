@@ -10,6 +10,7 @@ type CEITransaction struct {
 	//Dados de transações
 	ID        int       `gorm:"column:id"`
 	Symbol    string    `gorm:"column:symbol"`
+	BrokerID  float64   `gorm:"column:broker_id"`
 	Quantity  float64   `gorm:"column:quantity"`
 	Price     float64   `gorm:"column:price"`
 	TradeDate time.Time `gorm:"column:trade_date"`
