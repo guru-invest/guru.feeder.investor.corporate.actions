@@ -8,11 +8,15 @@ import (
 )
 
 func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.OMSTransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.OMSProceeds {
-
 	var result = []mapper.OMSProceeds{}
+
 	for _, corporate_action := range CorporateActions[Symbol] {
-		var partial_result = mapper.OMSProceeds{}
+		transaction_by_broker := map[float64]mapper.OMSProceeds{}
+
 		for _, transaction := range Transactions[Customer] {
+			if _, ok := transaction_by_broker[transaction.BrokerID]; !ok {
+				transaction_by_broker[transaction.BrokerID] = mapper.OMSProceeds{}
+			}
 
 			if transaction.Symbol != Symbol {
 				continue
@@ -23,35 +27,45 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 			}
 
 			if corporate_action.IsCashProceeds() {
-				partial_result.CustomerCode = Customer
-				partial_result.BrokerID = transaction.BrokerID
-				partial_result.Symbol = Symbol
-				partial_result.Quantity += float64(transaction.Quantity)
-				partial_result.Value = corporate_action.Value
-				partial_result.Amount = partial_result.Quantity * partial_result.Value
-				partial_result.Date = corporate_action.ComDate
-				partial_result.Event = corporate_action.Description
+
+				if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
+					entry.CustomerCode = Customer
+					entry.Symbol = Symbol
+					entry.Quantity += float64(transaction.Quantity)
+					entry.Value = corporate_action.Value
+					entry.Amount = entry.Quantity * entry.Value
+					entry.Date = corporate_action.ComDate
+					entry.Event = corporate_action.Description
+
+					transaction_by_broker[transaction.BrokerID] = entry
+				}
 			}
 
 		}
-		if partial_result.Quantity > 0 {
 
-			StringID := fmt.Sprintf("%s %f %s %f %f %f %s %s %s",
-				partial_result.CustomerCode,
-				partial_result.BrokerID,
-				partial_result.Symbol,
-				partial_result.Quantity,
-				partial_result.Value,
-				partial_result.Amount,
-				partial_result.Date.String(),
-				partial_result.Event,
-				corporate_action.PaymentDate.String())
+		for broker := range transaction_by_broker {
+			if entry, ok := transaction_by_broker[broker]; ok {
+				if entry.Quantity > 0 {
 
-			HashID := sha1.New()
-			HashID.Write([]byte(StringID))
+					StringID := fmt.Sprintf("%s %f %s %f %f %f %s %s %s",
+						entry.CustomerCode,
+						entry.BrokerID,
+						entry.Symbol,
+						entry.Quantity,
+						entry.Value,
+						entry.Amount,
+						entry.Date.String(),
+						entry.Event,
+						corporate_action.PaymentDate.String())
 
-			partial_result.ID = fmt.Sprintf("%x", HashID.Sum(nil))
-			result = append(result, partial_result)
+					HashID := sha1.New()
+					HashID.Write([]byte(StringID))
+
+					entry.ID = fmt.Sprintf("%x", HashID.Sum(nil))
+					entry.BrokerID = broker
+					result = append(result, entry)
+				}
+			}
 		}
 	}
 
