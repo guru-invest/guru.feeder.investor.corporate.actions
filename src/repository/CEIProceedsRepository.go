@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"gorm.io/gorm/clause"
 )
 
 type CEIProceedsRepository struct {
@@ -15,7 +16,7 @@ func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceed
 	h._connection.connect()
 	defer h._connection.disconnect()
 
-	err := h._connection._databaseConnection.Create(&CEIProceeds).Error
+	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&CEIProceeds).Error
 	if err != nil {
 		log.Println(err)
 	}

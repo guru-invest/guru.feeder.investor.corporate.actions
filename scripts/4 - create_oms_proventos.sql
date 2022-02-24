@@ -1,5 +1,5 @@
 CREATE TABLE wallet.oms_proventos (
-	id serial4 NOT NULL,
+	id text NOT NULL,
 	customer_code text NULL,
 	broker_id numeric NULL,
 	symbol text NULL,

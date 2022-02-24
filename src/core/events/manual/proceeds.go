@@ -1,6 +1,9 @@
 package manual
 
 import (
+	"crypto/sha1"
+	"fmt"
+
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
 
@@ -32,6 +35,21 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 
 		}
 		if partial_result.Quantity > 0 {
+			StringID := fmt.Sprintf("%s %f %s %f %f %f %s %s %s",
+				partial_result.CustomerCode,
+				partial_result.BrokerID,
+				partial_result.Symbol,
+				partial_result.Quantity,
+				partial_result.Value,
+				partial_result.Amount,
+				partial_result.Date.String(),
+				partial_result.Event,
+				corporate_action.PaymentDate.String())
+
+			HashID := sha1.New()
+			HashID.Write([]byte(StringID))
+
+			partial_result.ID = fmt.Sprintf("%x", HashID.Sum(nil))
 			result = append(result, partial_result)
 		}
 	}

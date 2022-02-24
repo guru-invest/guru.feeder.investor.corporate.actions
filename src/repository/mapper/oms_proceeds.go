@@ -7,7 +7,7 @@ func (OMSProceeds) TableName() string {
 }
 
 type OMSProceeds struct {
-	ID           int       `gorm:"column:id"`
+	ID           string    `gorm:"column:id"`
 	CustomerCode string    `gorm:"column:customer_code"`
 	BrokerID     float64   `gorm:"column:broker_id"`
 	Symbol       string    `gorm:"column:symbol"`
