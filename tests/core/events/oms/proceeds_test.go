@@ -63,7 +63,7 @@ func TestProceeds(t *testing.T) {
 
 	// Processamento
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
-	OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyCashProceedsCorporateAction(Customer, "BIDI4", OMSTransactions, CorporateActions)...)
+	OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(Customer, "BIDI4", OMSTransactions, CorporateActions)...)
 
 	// Teste
 	ExpectedProceedsCount := 1

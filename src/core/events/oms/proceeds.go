@@ -7,7 +7,7 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
 
-func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.OMSTransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.OMSProceeds {
+func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.OMSTransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.OMSProceeds {
 	var result = []mapper.OMSProceeds{}
 
 	for _, corporate_action := range CorporateActions[Symbol] {
@@ -27,18 +27,15 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 			}
 
 			if corporate_action.IsCashProceeds() {
-
-				if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
-					entry.CustomerCode = Customer
-					entry.Symbol = Symbol
-					entry.Quantity += float64(transaction.Quantity)
-					entry.Value = corporate_action.Value
-					entry.Amount = entry.Quantity * entry.Value
-					entry.Date = corporate_action.ComDate
-					entry.Event = corporate_action.Description
-
-					transaction_by_broker[transaction.BrokerID] = entry
-				}
+				transaction_by_broker[transaction.BrokerID] =
+					applyCashProceeds(
+						Customer,
+						Symbol,
+						transaction_by_broker,
+						transaction,
+						corporate_action,
+					)
+				continue
 			}
 
 		}
@@ -70,4 +67,20 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 	}
 
 	return result
+}
+
+func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
+
+	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
+		entry.CustomerCode = Customer
+		entry.Symbol = Symbol
+		entry.Quantity += float64(transaction.Quantity)
+		entry.Value = corporate_action.Value
+		entry.Amount = entry.Quantity * entry.Value
+		entry.Date = corporate_action.ComDate
+		entry.Event = corporate_action.Description
+		return entry
+	}
+	return mapper.OMSProceeds{}
+
 }

@@ -128,7 +128,7 @@ func doProceedsOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	for _, customer := range OMSCustomers {
 
 		for _, symbol := range OMSSymbols {
-			OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyCashProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, CorporateActions)...)
+			OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, CorporateActions)...)
 
 		}
 	}
