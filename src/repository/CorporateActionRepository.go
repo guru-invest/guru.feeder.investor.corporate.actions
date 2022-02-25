@@ -20,8 +20,8 @@ func (h CorporateActionRepository) getAllCorporateActions(asc_or_desc string) ([
 	err := h._connection._databaseConnection.
 		Select("ticker, description, value, payment_date, com_date, target_ticker, calculated_factor").
 		Order("com_date "+asc_or_desc).
-		Find(&corporate_action, "com_date > current_timestamp - interval '5 years' and description in (?, ?, ?, ?, ?, ?)",
-			constants.Update, constants.Grouping, constants.Unfolding, constants.InterestOnEquity, constants.Dividend, constants.Income).
+		Find(&corporate_action, "com_date > current_timestamp - interval '5 years' and description in (?, ?, ?, ?, ?, ?, ?)",
+			constants.Update, constants.Grouping, constants.Unfolding, constants.InterestOnEquity, constants.Dividend, constants.Income, constants.Bonus).
 		Error
 
 	if err != nil {

@@ -8,12 +8,17 @@ func (ManualTransaction) TableName() string {
 
 type ManualTransaction struct {
 	//Dados de transações
-	ID        int       `gorm:"column:id"`
-	BrokerID  float64   `gorm:"column:broker_id"`
-	Symbol    string    `gorm:"column:symbol"`
-	Quantity  float64   `gorm:"column:quantity"`
-	Price     float64   `gorm:"column:price"`
-	TradeDate time.Time `gorm:"column:trade_date"`
+	ID             int       `gorm:"column:id"`
+	CustomerCode   string    `gorm:"column:customer_code"`
+	BrokerID       float64   `gorm:"column:broker_id"`
+	InvestmentType int       `gorm:"column:investment_type"`
+	Symbol         string    `gorm:"column:symbol"`
+	Quantity       float64   `gorm:"column:quantity"`
+	Price          float64   `gorm:"column:price"`
+	Amount         float64   `gorm:"column:amount"`
+	Side           int       `gorm:"column:side"`
+	TradeDate      time.Time `gorm:"column:trade_date"`
+	SourceType     string    `gorm:"column:source_type"`
 
 	//Dados calculados com base nos eventos corporativos
 	PostEventQuantity float64 `gorm:"column:post_event_quantity"`

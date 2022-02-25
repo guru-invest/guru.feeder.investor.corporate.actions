@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
 func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.OMSTransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.OMSProceeds {
@@ -29,6 +30,18 @@ func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[stri
 			if corporate_action.IsCashProceeds() {
 				transaction_by_broker[transaction.BrokerID] =
 					applyCashProceeds(
+						Customer,
+						Symbol,
+						transaction_by_broker,
+						transaction,
+						corporate_action,
+					)
+				continue
+			}
+
+			if corporate_action.IsBonusProceeds() {
+				transaction_by_broker[transaction.BrokerID] =
+					applyBonusProceeds(
 						Customer,
 						Symbol,
 						transaction_by_broker,
@@ -77,6 +90,22 @@ func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float6
 		entry.Quantity += float64(transaction.Quantity)
 		entry.Value = corporate_action.Value
 		entry.Amount = entry.Quantity * entry.Value
+		entry.Date = corporate_action.ComDate
+		entry.Event = corporate_action.Description
+		return entry
+	}
+	return mapper.OMSProceeds{}
+
+}
+
+func applyBonusProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
+
+	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
+		entry.CustomerCode = Customer
+		entry.Symbol = Symbol
+		entry.Quantity += float64(transaction.Quantity)
+		entry.Value = corporate_action.Value
+		entry.Amount = utils.Truncate((entry.Quantity / entry.Value), 0)
 		entry.Date = corporate_action.ComDate
 		entry.Event = corporate_action.Description
 		return entry

@@ -15,6 +15,10 @@ func (h CorporateAction) IsCashProceeds() bool {
 	return utils.Contains([]string{constants.InterestOnEquity, constants.Dividend, constants.Income}, h.Description)
 }
 
+func (h CorporateAction) IsBonusProceeds() bool {
+	return utils.Contains([]string{constants.Bonus}, h.Description)
+}
+
 func (CorporateAction) TableName() string {
 	return "financial.corporate_actions"
 }

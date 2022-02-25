@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"gorm.io/gorm/clause"
 )
 
 type ManualTransactionRepository struct {
@@ -41,6 +42,18 @@ func (h ManualTransactionRepository) updateManualTransactions(ManualTransaction 
 	}
 }
 
+func (h ManualTransactionRepository) insertManualTransactions(ManualTransaction []mapper.ManualTransaction) {
+	h._connection.connect()
+	defer h._connection.disconnect()
+
+	for _, value := range ManualTransaction {
+		err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&value).Error
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
 func GetManualTransaction() []mapper.ManualTransaction {
 	db := ManualTransactionRepository{}
 	manual_transaction, err := db.getManualTransactions()
@@ -55,4 +68,9 @@ func GetManualTransaction() []mapper.ManualTransaction {
 func UpdateManualTransaction(ManualTransaction []mapper.ManualTransaction) {
 	db := ManualTransactionRepository{}
 	db.updateManualTransactions(ManualTransaction)
+}
+
+func InsertManualTransaction(ManualTransaction []mapper.ManualTransaction) {
+	db := ManualTransactionRepository{}
+	db.insertManualTransactions(ManualTransaction)
 }

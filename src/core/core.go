@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/cei"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
@@ -137,5 +138,29 @@ func doProceedsOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	// Mas fazer 1 select por customer é loucura. Demora demais.
 	// Validei com uns 20 symbols e parece estar tudo bem, mas vou manter esse todo para validar um pouco mais
 	repository.InsertOMSProceeds(OMSProceedPersisterObject)
+
+	ManualTransactions := []mapper.ManualTransaction{}
+	for _, proceed := range OMSProceedPersisterObject {
+		if proceed.Event == constants.Bonus && proceed.Quantity > 0 {
+			ManualTransaction := mapper.ManualTransaction{}
+
+			ManualTransaction.CustomerCode = proceed.CustomerCode
+			ManualTransaction.BrokerID = proceed.BrokerID
+			ManualTransaction.InvestmentType = constants.BonusInvestmentType
+			ManualTransaction.Symbol = proceed.Symbol
+			ManualTransaction.Quantity = proceed.Quantity
+			ManualTransaction.Price = constants.MinimalPrice
+			ManualTransaction.Amount = ManualTransaction.Quantity * ManualTransaction.Price
+			ManualTransaction.Side = constants.Purchase
+			ManualTransaction.TradeDate = proceed.Date // TODO com_date ou initial_date do evento ?
+			ManualTransaction.SourceType = constants.ManualSourceType
+			ManualTransaction.EventDate = proceed.Date
+			ManualTransaction.EventName = proceed.Event
+
+			ManualTransactions = append(ManualTransactions, ManualTransaction)
+		}
+	}
+
+	repository.InsertManualTransaction(ManualTransactions)
 
 }
