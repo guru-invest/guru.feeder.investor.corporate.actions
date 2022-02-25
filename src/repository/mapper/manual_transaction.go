@@ -7,7 +7,7 @@ func (ManualTransaction) TableName() string {
 }
 
 type ManualTransaction struct {
-	//Dados de transações
+	// Dados de transações
 	ID             int       `gorm:"column:id"`
 	CustomerCode   string    `gorm:"column:customer_code"`
 	BrokerID       float64   `gorm:"column:broker_id"`
@@ -20,7 +20,7 @@ type ManualTransaction struct {
 	TradeDate      time.Time `gorm:"column:trade_date"`
 	SourceType     string    `gorm:"column:source_type"`
 
-	//Dados calculados com base nos eventos corporativos
+	// Dados calculados com base nos eventos corporativos
 	PostEventQuantity float64 `gorm:"column:post_event_quantity"`
 	PostEventPrice    float64 `gorm:"column:post_event_price"`
 

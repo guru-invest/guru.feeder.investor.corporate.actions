@@ -30,11 +30,11 @@ func (h ManualTransactionRepository) getManualTransactions() ([]mapper.ManualTra
 }
 
 // TODO - Não deveria estar persistindo dados aqui no repository
-func (h ManualTransactionRepository) updateManualTransactions(ManualTransaction []mapper.ManualTransaction) {
+func (h ManualTransactionRepository) updateManualTransactions(manualTransaction []mapper.ManualTransaction) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
-	for _, value := range ManualTransaction {
+	for _, value := range manualTransaction {
 		err := h._connection._databaseConnection.Save(&value).Error
 		if err != nil {
 			log.Println(err)
@@ -42,11 +42,11 @@ func (h ManualTransactionRepository) updateManualTransactions(ManualTransaction 
 	}
 }
 
-func (h ManualTransactionRepository) insertManualTransactions(ManualTransaction []mapper.ManualTransaction) {
+func (h ManualTransactionRepository) insertManualTransactions(manualTransaction []mapper.ManualTransaction) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
-	for _, value := range ManualTransaction {
+	for _, value := range manualTransaction {
 		err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&value).Error
 		if err != nil {
 			log.Println(err)
@@ -65,12 +65,12 @@ func GetManualTransaction() []mapper.ManualTransaction {
 	return manual_transaction
 }
 
-func UpdateManualTransaction(ManualTransaction []mapper.ManualTransaction) {
+func UpdateManualTransaction(manualTransaction []mapper.ManualTransaction) {
 	db := ManualTransactionRepository{}
-	db.updateManualTransactions(ManualTransaction)
+	db.updateManualTransactions(manualTransaction)
 }
 
-func InsertManualTransaction(ManualTransaction []mapper.ManualTransaction) {
+func InsertManualTransaction(manualTransaction []mapper.ManualTransaction) {
 	db := ManualTransactionRepository{}
-	db.insertManualTransactions(ManualTransaction)
+	db.insertManualTransactions(manualTransaction)
 }

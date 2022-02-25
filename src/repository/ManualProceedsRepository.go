@@ -12,18 +12,18 @@ type ManualProceedsRepository struct {
 }
 
 // TODO - Não deveria estar persistindo dados aqui no repository
-func (h ManualProceedsRepository) insertManualProceeds(ManualProceeds []mapper.ManualProceeds) {
+func (h ManualProceedsRepository) insertManualProceeds(manualProceeds []mapper.ManualProceeds) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
-	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&ManualProceeds).Error
+	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&manualProceeds).Error
 	if err != nil {
 		log.Println(err)
 	}
 
 }
 
-func InsertManualProceeds(ManualProceeds []mapper.ManualProceeds) {
+func InsertManualProceeds(manualProceeds []mapper.ManualProceeds) {
 	db := ManualProceedsRepository{}
-	db.insertManualProceeds(ManualProceeds)
+	db.insertManualProceeds(manualProceeds)
 }

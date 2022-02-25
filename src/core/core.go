@@ -33,14 +33,14 @@ func doApplyBasicEvents() {
 	wg.Wait()
 }
 
-func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
+func doBasicOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	OMSTransaction := repository.GetOMSTransaction()
 	OMSTransactionPersisterObject := []mapper.OMSTransaction{}
 
 	for _, transaction := range OMSTransaction {
 
-		for _, corporate_action := range CorporateActions[transaction.Symbol] {
+		for _, corporate_action := range corporateActions[transaction.Symbol] {
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
 			if transaction.TradeDate.After(corporate_action.ComDate) {
@@ -62,14 +62,14 @@ func doBasicOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	repository.UpdateOMSTransaction(OMSTransactionPersisterObject)
 }
 
-func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
+func doBasicManualEvents(corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	ManualTransaction := repository.GetManualTransaction()
 	ManualTransactionPersisterObject := []mapper.ManualTransaction{}
 
 	for _, transaction := range ManualTransaction {
 
-		for _, corporate_action := range CorporateActions[transaction.Symbol] {
+		for _, corporate_action := range corporateActions[transaction.Symbol] {
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
 			if transaction.TradeDate.After(corporate_action.ComDate) {
@@ -91,14 +91,14 @@ func doBasicManualEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	repository.UpdateManualTransaction(ManualTransactionPersisterObject)
 }
 
-func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
+func doBasicCEIEvents(corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	CEITransaction := repository.GetCEITransaction()
 	CEITransactionPersisterObject := []mapper.CEITransaction{}
 
 	for _, transaction := range CEITransaction {
 
-		for _, corporate_action := range CorporateActions[transaction.Symbol] {
+		for _, corporate_action := range corporateActions[transaction.Symbol] {
 
 			// Se a data de com_date for maior, significa que eu não precios aplicar este evento nesta transação
 			if transaction.TradeDate.After(corporate_action.ComDate) {
@@ -120,7 +120,7 @@ func doBasicCEIEvents(CorporateActions map[string][]mapper.CorporateAction) {
 	repository.UpdateCEITransaction(CEITransactionPersisterObject)
 }
 
-func doProceedsOMSEvents(CorporateActions map[string][]mapper.CorporateAction) {
+func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
 	OMSTransactions := repository.GetAllOMSTransactions()
 	OMSCustomers := repository.GetCustomers()

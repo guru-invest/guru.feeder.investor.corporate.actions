@@ -51,8 +51,8 @@ func (db *DatabaseConnection) connect() {
 		log.Fatal(err.Error())
 	}
 	sqlDB.SetMaxOpenConns(50)                 // maximo de nova conexao por pool de conexao
-	sqlDB.SetMaxIdleConns(25)                 //maximo de conexão inativa aguardando reuso
-	sqlDB.SetConnMaxLifetime(3 * time.Minute) //tempo maximo para expirar uma conexao
+	sqlDB.SetMaxIdleConns(25)                 // maximo de conexão inativa aguardando reuso
+	sqlDB.SetConnMaxLifetime(3 * time.Minute) // tempo maximo para expirar uma conexao
 
 	db._databaseConnection = database
 

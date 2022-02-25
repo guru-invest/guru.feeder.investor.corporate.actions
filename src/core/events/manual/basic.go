@@ -7,15 +7,15 @@ import (
 )
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
-func ApplyBasicCorporateAction(ManualTransaction mapper.ManualTransaction) mapper.ManualTransaction {
+func ApplyBasicCorporateAction(manualTransaction mapper.ManualTransaction) mapper.ManualTransaction {
 
 	// Quando for um evento de Atualização, o Fator deve ser 1, pois a Quantidade e o Preço não podem ser alterados.
-	if ManualTransaction.EventName == constants.Update {
-		ManualTransaction.EventFactor = 1
+	if manualTransaction.EventName == constants.Update {
+		manualTransaction.EventFactor = 1
 	}
 
-	ManualTransaction.PostEventQuantity = float64(ManualTransaction.Quantity) / ManualTransaction.EventFactor
-	ManualTransaction.PostEventPrice = utils.Truncate(ManualTransaction.Price*ManualTransaction.EventFactor, 2)
+	manualTransaction.PostEventQuantity = float64(manualTransaction.Quantity) / manualTransaction.EventFactor
+	manualTransaction.PostEventPrice = utils.Truncate(manualTransaction.Price*manualTransaction.EventFactor, 2)
 
-	return ManualTransaction
+	return manualTransaction
 }

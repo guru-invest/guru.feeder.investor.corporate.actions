@@ -9,18 +9,18 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
-func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.OMSTransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.OMSProceeds {
+func ApplyProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.OMSTransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.OMSProceeds {
 	var result = []mapper.OMSProceeds{}
 
-	for _, corporate_action := range CorporateActions[Symbol] {
+	for _, corporate_action := range corporateActions[symbol] {
 		transaction_by_broker := map[float64]mapper.OMSProceeds{}
 
-		for _, transaction := range Transactions[Customer] {
+		for _, transaction := range transactions[customer] {
 			if _, ok := transaction_by_broker[transaction.BrokerID]; !ok {
 				transaction_by_broker[transaction.BrokerID] = mapper.OMSProceeds{}
 			}
 
-			if transaction.Symbol != Symbol {
+			if transaction.Symbol != symbol {
 				continue
 			}
 
@@ -31,8 +31,8 @@ func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[stri
 			if corporate_action.IsCashProceeds() {
 				transaction_by_broker[transaction.BrokerID] =
 					applyCashProceeds(
-						Customer,
-						Symbol,
+						customer,
+						symbol,
 						transaction_by_broker,
 						transaction,
 						corporate_action,
@@ -43,8 +43,8 @@ func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[stri
 			if corporate_action.IsBonusProceeds() {
 				transaction_by_broker[transaction.BrokerID] =
 					applyBonusProceeds(
-						Customer,
-						Symbol,
+						customer,
+						symbol,
 						transaction_by_broker,
 						transaction,
 						corporate_action,
@@ -88,11 +88,11 @@ func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[stri
 	return result
 }
 
-func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
+func applyCashProceeds(customer, symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
 
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
-		entry.CustomerCode = Customer
-		entry.Symbol = Symbol
+		entry.CustomerCode = customer
+		entry.Symbol = symbol
 		entry.Quantity += float64(transaction.Quantity)
 		entry.Value = corporate_action.Value
 		entry.Amount = entry.Quantity * entry.Value
@@ -104,15 +104,15 @@ func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float6
 
 }
 
-func applyBonusProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
+func applyBonusProceeds(customer, symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
 
 	if transaction.BrokerID != constants.Ideal {
 		return mapper.OMSProceeds{}
 	}
 
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
-		entry.CustomerCode = Customer
-		entry.Symbol = Symbol
+		entry.CustomerCode = customer
+		entry.Symbol = symbol
 		entry.Quantity += float64(transaction.Quantity)
 		entry.Value = corporate_action.Value
 		entry.Amount = utils.Truncate((entry.Quantity / entry.Value), 0)

@@ -9,9 +9,9 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
 
-func StrToDate(DateAsText string) time.Time {
+func StrToDate(dateAsText string) time.Time {
 	layout := "2006-01-02 15:04:05"
-	result, err := time.Parse(layout, DateAsText)
+	result, err := time.Parse(layout, dateAsText)
 
 	if err != nil {
 		log.Println(err)
@@ -20,12 +20,13 @@ func StrToDate(DateAsText string) time.Time {
 	return result
 }
 
-func newTransactionObject(symbol string, quantity int, price float64, trade_date time.Time) mapper.OMSTransaction {
+func newTransactionObject(symbol string, quantity int, price float64, trade_date time.Time, broker_id float64) mapper.OMSTransaction {
 	result := mapper.OMSTransaction{}
 	result.Symbol = symbol
 	result.Quantity = quantity
 	result.Price = price
 	result.TradeDate = trade_date
+	result.BrokerID = broker_id
 	return result
 }
 
@@ -44,12 +45,12 @@ func TestProceeds(t *testing.T) {
 
 	// Mock de transações
 	OMSTransactionObjects := []mapper.OMSTransaction{}
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 3, 27.41, StrToDate("2021-07-20 11:40:26")))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 5, 26.68, StrToDate("2021-07-26 10:29:32")))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 29, 26.68, StrToDate("2021-07-26 10:29:32")))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.69, StrToDate("2021-07-28 8:11:05")))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.67, StrToDate("2021-07-28 8:13:40")))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 20, 9.47, StrToDate("2022-01-03 11:34:38")))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 3, 27.41, StrToDate("2021-07-20 11:40:26"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 5, 26.68, StrToDate("2021-07-26 10:29:32"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 29, 26.68, StrToDate("2021-07-26 10:29:32"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.69, StrToDate("2021-07-28 8:11:05"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.67, StrToDate("2021-07-28 8:13:40"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 20, 9.47, StrToDate("2022-01-03 11:34:38"), 1618))
 	// Agrupamento das transações em um map com chave por usuário
 	OMSTransactions := map[string][]mapper.OMSTransaction{}
 	OMSTransactions[Customer] = OMSTransactionObjects

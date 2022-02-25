@@ -9,18 +9,18 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
-func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.CEITransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.CEIProceeds {
+func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.CEITransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.CEIProceeds {
 	var result = []mapper.CEIProceeds{}
 
-	for _, corporate_action := range CorporateActions[Symbol] {
+	for _, corporate_action := range corporateActions[symbol] {
 		transaction_by_broker := map[float64]mapper.CEIProceeds{}
 
-		for _, transaction := range Transactions[Customer] {
+		for _, transaction := range transactions[customer] {
 			if _, ok := transaction_by_broker[transaction.BrokerID]; !ok {
 				transaction_by_broker[transaction.BrokerID] = mapper.CEIProceeds{}
 			}
 
-			if transaction.Symbol != Symbol {
+			if transaction.Symbol != symbol {
 				continue
 			}
 
@@ -31,8 +31,8 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 			if corporate_action.IsCashProceeds() {
 				transaction_by_broker[transaction.BrokerID] =
 					applyCashProceeds(
-						Customer,
-						Symbol,
+						customer,
+						symbol,
 						transaction_by_broker,
 						transaction,
 						corporate_action,
@@ -43,8 +43,8 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 			if corporate_action.IsBonusProceeds() {
 				transaction_by_broker[transaction.BrokerID] =
 					applyBonusProceeds(
-						Customer,
-						Symbol,
+						customer,
+						symbol,
 						transaction_by_broker,
 						transaction,
 						corporate_action,
@@ -88,11 +88,11 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 	return result
 }
 
-func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.CEIProceeds, transaction mapper.CEITransaction, corporate_action mapper.CorporateAction) mapper.CEIProceeds {
+func applyCashProceeds(customer, symbol string, transaction_by_broker map[float64]mapper.CEIProceeds, transaction mapper.CEITransaction, corporate_action mapper.CorporateAction) mapper.CEIProceeds {
 
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
-		entry.CustomerCode = Customer
-		entry.Symbol = Symbol
+		entry.CustomerCode = customer
+		entry.Symbol = symbol
 		entry.Quantity += float64(transaction.Quantity)
 		entry.Value = corporate_action.Value
 		entry.Amount = entry.Quantity * entry.Value
@@ -104,15 +104,15 @@ func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float6
 
 }
 
-func applyBonusProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.CEIProceeds, transaction mapper.CEITransaction, corporate_action mapper.CorporateAction) mapper.CEIProceeds {
+func applyBonusProceeds(customer, symbol string, transaction_by_broker map[float64]mapper.CEIProceeds, transaction mapper.CEITransaction, corporate_action mapper.CorporateAction) mapper.CEIProceeds {
 
 	if transaction.BrokerID == constants.Ideal {
 		return mapper.CEIProceeds{}
 	}
 
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
-		entry.CustomerCode = Customer
-		entry.Symbol = Symbol
+		entry.CustomerCode = customer
+		entry.Symbol = symbol
 		entry.Quantity += float64(transaction.Quantity)
 		entry.Value = corporate_action.Value
 		entry.Amount = utils.Truncate((entry.Quantity / entry.Value), 0)

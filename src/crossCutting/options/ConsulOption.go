@@ -34,7 +34,7 @@ func (t ConsulOption) Get() string {
 	}
 
 	if consulOption.Port != "" {
-		t.URL = t.URL + t.Port
+		t.URL += t.Port
 	}
 
 	return consulOption.URL + consulOption.Context + consulOption.Service

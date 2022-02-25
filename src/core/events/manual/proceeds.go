@@ -7,18 +7,18 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
 
-func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[string][]mapper.ManualTransaction, CorporateActions map[string][]mapper.CorporateAction) []mapper.ManualProceeds {
+func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.ManualTransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.ManualProceeds {
 	var result = []mapper.ManualProceeds{}
 
-	for _, corporate_action := range CorporateActions[Symbol] {
+	for _, corporate_action := range corporateActions[symbol] {
 		transaction_by_broker := map[float64]mapper.ManualProceeds{}
 
-		for _, transaction := range Transactions[Customer] {
+		for _, transaction := range transactions[customer] {
 			if _, ok := transaction_by_broker[transaction.BrokerID]; !ok {
 				transaction_by_broker[transaction.BrokerID] = mapper.ManualProceeds{}
 			}
 
-			if transaction.Symbol != Symbol {
+			if transaction.Symbol != symbol {
 				continue
 			}
 
@@ -29,8 +29,8 @@ func ApplyCashProceedsCorporateAction(Customer, Symbol string, Transactions map[
 			if corporate_action.IsCashProceeds() {
 
 				if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
-					entry.CustomerCode = Customer
-					entry.Symbol = Symbol
+					entry.CustomerCode = customer
+					entry.Symbol = symbol
 					entry.Quantity += float64(transaction.Quantity)
 					entry.Value = corporate_action.Value
 					entry.Amount = entry.Quantity * entry.Value
