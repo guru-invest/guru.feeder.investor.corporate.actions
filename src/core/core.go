@@ -23,13 +23,13 @@ func Run() {
 }
 
 func doApplyBasicEvents() {
-	CorporateActionsAsc := repository.GetCorporateActions("asc")
+	// CorporateActionsAsc := repository.GetCorporateActions("asc")
 	CorporateActionsDesc := repository.GetCorporateActions("desc")
-	wg.Add(4)
-	go doBasicOMSEvents(CorporateActionsDesc)
+	wg.Add(1)
+	// go doBasicOMSEvents(CorporateActionsDesc)
 	go doBasicManualEvents(CorporateActionsDesc)
-	go doBasicCEIEvents(CorporateActionsDesc)
-	go doProceedsOMSEvents(CorporateActionsAsc)
+	// go doBasicCEIEvents(CorporateActionsDesc)
+	// go doProceedsOMSEvents(CorporateActionsAsc)
 	wg.Wait()
 }
 

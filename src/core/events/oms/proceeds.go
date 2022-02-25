@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
@@ -54,6 +55,11 @@ func ApplyProceedsCorporateAction(Customer, Symbol string, Transactions map[stri
 		}
 
 		for broker := range transaction_by_broker {
+
+			if broker != constants.Ideal {
+				continue
+			}
+
 			if entry, ok := transaction_by_broker[broker]; ok {
 				if entry.Quantity > 0 {
 
@@ -100,6 +106,10 @@ func applyCashProceeds(Customer, Symbol string, transaction_by_broker map[float6
 
 func applyBonusProceeds(Customer, Symbol string, transaction_by_broker map[float64]mapper.OMSProceeds, transaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSProceeds {
 
+	if transaction.BrokerID != constants.Ideal {
+		return mapper.OMSProceeds{}
+	}
+
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 		entry.CustomerCode = Customer
 		entry.Symbol = Symbol
@@ -110,6 +120,7 @@ func applyBonusProceeds(Customer, Symbol string, transaction_by_broker map[float
 		entry.Event = corporate_action.Description
 		return entry
 	}
+
 	return mapper.OMSProceeds{}
 
 }

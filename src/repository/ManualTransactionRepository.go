@@ -17,7 +17,7 @@ func (h ManualTransactionRepository) getManualTransactions() ([]mapper.ManualTra
 
 	var manual_transaction []mapper.ManualTransaction
 	err := h._connection._databaseConnection.
-		Select("id, symbol, broker_id, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, source_type, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Order("trade_date asc").
 		Find(&manual_transaction).
 		Error

@@ -23,3 +23,7 @@ const (
 const (
 	ManualSourceType = "Manual"
 )
+
+const (
+	Ideal = 1618
+)
