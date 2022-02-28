@@ -49,11 +49,7 @@ func doBasicOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
 			if corporate_action.IsBasic() {
-				transaction.EventName = corporate_action.Description
-				transaction.PostEventSymbol = corporate_action.TargetTicker
-				transaction.EventFactor = corporate_action.CalculatedFactor
-				transaction.EventDate = corporate_action.ComDate
-				OMSTransactionPersisterObject = append(OMSTransactionPersisterObject, oms.ApplyBasicCorporateAction(transaction))
+				OMSTransactionPersisterObject = append(OMSTransactionPersisterObject, oms.ApplyBasicCorporateAction(transaction, corporate_action))
 				continue
 			}
 		}
@@ -78,11 +74,7 @@ func doBasicManualEvents(corporateActions map[string][]mapper.CorporateAction) {
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
 			if corporate_action.IsBasic() {
-				transaction.EventName = corporate_action.Description
-				transaction.PostEventSymbol = corporate_action.TargetTicker
-				transaction.EventFactor = corporate_action.CalculatedFactor
-				transaction.EventDate = corporate_action.ComDate
-				ManualTransactionPersisterObject = append(ManualTransactionPersisterObject, manual.ApplyBasicCorporateAction(transaction))
+				ManualTransactionPersisterObject = append(ManualTransactionPersisterObject, manual.ApplyBasicCorporateAction(transaction, corporate_action))
 				continue
 			}
 		}
@@ -107,11 +99,7 @@ func doBasicCEIEvents(corporateActions map[string][]mapper.CorporateAction) {
 
 			// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
 			if corporate_action.IsBasic() {
-				transaction.EventName = corporate_action.Description
-				transaction.PostEventSymbol = corporate_action.TargetTicker
-				transaction.EventFactor = corporate_action.CalculatedFactor
-				transaction.EventDate = corporate_action.ComDate
-				CEITransactionPersisterObject = append(CEITransactionPersisterObject, cei.ApplyBasicCorporateAction(transaction))
+				CEITransactionPersisterObject = append(CEITransactionPersisterObject, cei.ApplyBasicCorporateAction(transaction, corporate_action))
 				continue
 			}
 		}
@@ -129,35 +117,18 @@ func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
 	for _, customer := range OMSCustomers {
 
 		for _, symbol := range OMSSymbols {
-			OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, CorporateActions)...)
+			OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, corporateActions)...)
 
 		}
 	}
-	// TODO - Validar bem os dados de proventos.
-	// O ideal seria fazer os Inserts com base em Symbols de um determinado customer.
-	// Mas fazer 1 select por customer é loucura. Demora demais.
-	// Validei com uns 20 symbols e parece estar tudo bem, mas vou manter esse todo para validar um pouco mais
+
 	repository.InsertOMSProceeds(OMSProceedPersisterObject)
 
 	ManualTransactions := []mapper.ManualTransaction{}
 	for _, proceed := range OMSProceedPersisterObject {
 		if proceed.Event == constants.Bonus && proceed.Quantity > 0 {
 			ManualTransaction := mapper.ManualTransaction{}
-
-			ManualTransaction.CustomerCode = proceed.CustomerCode
-			ManualTransaction.BrokerID = proceed.BrokerID
-			ManualTransaction.InvestmentType = constants.BonusInvestmentType
-			ManualTransaction.Symbol = proceed.Symbol
-			ManualTransaction.Quantity = proceed.Quantity
-			ManualTransaction.Price = constants.MinimalPrice
-			ManualTransaction.Amount = ManualTransaction.Quantity * ManualTransaction.Price
-			ManualTransaction.Side = constants.Purchase
-			ManualTransaction.TradeDate = proceed.Date // TODO com_date ou initial_date do evento ?
-			ManualTransaction.SourceType = constants.ManualSourceType
-			ManualTransaction.EventDate = proceed.Date
-			ManualTransaction.EventName = proceed.Event
-
-			ManualTransactions = append(ManualTransactions, ManualTransaction)
+			ManualTransactions = append(ManualTransactions, manual.ApplyInheritedBonusAction(ManualTransaction, proceed))
 		}
 	}
 
