@@ -9,15 +9,17 @@ import (
 )
 
 func TestBasicGrouping(t *testing.T) {
+	CorporateAction := mapper.CorporateAction{}
+	CorporateAction.Description = constants.Grouping
+	CorporateAction.CalculatedFactor = 5
 
 	OMSTransactionObject := mapper.OMSTransaction{}
 	OMSTransactionObject.EventName = constants.Grouping
 	OMSTransactionObject.Symbol = "PRIO3"
 	OMSTransactionObject.Quantity = 5
 	OMSTransactionObject.Price = 3.33
-	OMSTransactionObject.EventFactor = 5
 
-	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject, CorporateAction)
 
 	ExpectedQuantity := 1.0
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
@@ -32,15 +34,17 @@ func TestBasicGrouping(t *testing.T) {
 }
 
 func TestBasicUnfolding(t *testing.T) {
+	CorporateAction := mapper.CorporateAction{}
+	CorporateAction.Description = constants.Unfolding
+	CorporateAction.CalculatedFactor = 0.1996007984
 
 	OMSTransactionObject := mapper.OMSTransaction{}
 	OMSTransactionObject.EventName = constants.Unfolding
 	OMSTransactionObject.Symbol = "ALUP4"
 	OMSTransactionObject.Quantity = 5
 	OMSTransactionObject.Price = 9.13
-	OMSTransactionObject.EventFactor = 0.1996007984
 
-	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject, CorporateAction)
 
 	ExpectedQuantity := 25.0500000004008
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
@@ -55,6 +59,8 @@ func TestBasicUnfolding(t *testing.T) {
 }
 
 func TestBasicUpdate(t *testing.T) {
+	CorporateAction := mapper.CorporateAction{}
+	CorporateAction.Description = constants.Update
 
 	OMSTransactionObject := mapper.OMSTransaction{}
 	OMSTransactionObject.EventName = constants.Update
@@ -64,7 +70,7 @@ func TestBasicUpdate(t *testing.T) {
 	OMSTransactionObject.Price = 8.88
 	OMSTransactionObject.EventFactor = 0
 
-	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject)
+	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject, CorporateAction)
 
 	ExpectedQuantity := 10.0
 	if OMSTransactionObject.PostEventQuantity != ExpectedQuantity {
