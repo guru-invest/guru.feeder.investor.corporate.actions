@@ -47,7 +47,10 @@ func (h ManualTransactionRepository) insertManualTransactions(manualTransaction 
 	defer h._connection.disconnect()
 
 	for _, value := range manualTransaction {
-		err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&value).Error
+		err := h._connection._databaseConnection.Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "hash_id"}},
+			DoNothing: true,
+		}).Create(&value).Error
 		if err != nil {
 			log.Println(err)
 		}

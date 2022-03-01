@@ -29,4 +29,6 @@ type ManualTransaction struct {
 	EventFactor     float64   `gorm:"column:event_factor"`
 	EventDate       time.Time `gorm:"column:event_date"`
 	EventName       string    `gorm:"column:event_name"`
+
+	Hash_ID string `gorm:"column:hash_id"`
 }

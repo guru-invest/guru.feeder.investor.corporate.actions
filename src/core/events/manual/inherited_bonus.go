@@ -1,6 +1,9 @@
 package manual
 
 import (
+	"crypto/sha1"
+	"fmt"
+
 	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 )
@@ -19,6 +22,26 @@ func ApplyInheritedBonusAction(manualTransaction mapper.ManualTransaction, proce
 		manualTransaction.SourceType = constants.ManualSourceType
 		manualTransaction.EventDate = proceed.Date
 		manualTransaction.EventName = proceed.Event
+
+		StringID := fmt.Sprintf("%s %f %d %s %f %f %f %d %s %s %s %s",
+			manualTransaction.CustomerCode,
+			manualTransaction.BrokerID,
+			manualTransaction.InvestmentType,
+			manualTransaction.Symbol,
+			manualTransaction.Quantity,
+			manualTransaction.Price,
+			manualTransaction.Amount,
+			manualTransaction.Side,
+			manualTransaction.TradeDate.String(),
+			manualTransaction.SourceType,
+			manualTransaction.EventDate.String(),
+			manualTransaction.EventName,
+		)
+
+		HashID := sha1.New()
+		HashID.Write([]byte(StringID))
+
+		manualTransaction.Hash_ID = fmt.Sprintf("%x", HashID.Sum(nil))
 	}
 	return manualTransaction
 }
