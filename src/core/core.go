@@ -126,7 +126,7 @@ func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
 
 	ManualTransactions := []mapper.ManualTransaction{}
 	for _, proceed := range OMSProceedPersisterObject {
-		if proceed.Event == constants.Bonus && proceed.Quantity > 0 {
+		if proceed.Event == constants.Bonus {
 			ManualTransaction := mapper.ManualTransaction{}
 			ManualTransactions = append(ManualTransactions, manual.ApplyInheritedBonusAction(ManualTransaction, proceed))
 		}
