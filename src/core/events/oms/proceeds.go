@@ -16,6 +16,10 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 		transaction_by_broker := map[float64]mapper.OMSProceeds{}
 
 		for _, transaction := range transactions[customer] {
+			if transaction.BrokerID != constants.Ideal {
+				continue
+			}
+
 			if _, ok := transaction_by_broker[transaction.BrokerID]; !ok {
 				transaction_by_broker[transaction.BrokerID] = mapper.OMSProceeds{}
 			}
@@ -55,10 +59,6 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 		}
 
 		for broker := range transaction_by_broker {
-
-			if broker != constants.Ideal {
-				continue
-			}
 
 			if entry, ok := transaction_by_broker[broker]; ok {
 				if entry.Quantity > 0 {
