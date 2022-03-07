@@ -16,8 +16,9 @@ func TestBasicGrouping(t *testing.T) {
 	OMSTransactionObject := mapper.OMSTransaction{}
 	OMSTransactionObject.EventName = constants.Grouping
 	OMSTransactionObject.Symbol = "PRIO3"
-	OMSTransactionObject.Quantity = 5
-	OMSTransactionObject.Price = 3.33
+	OMSTransactionObject.PostEventQuantity = 5
+	OMSTransactionObject.PostEventPrice = 3.33
+	OMSTransactionObject.Amount = 16.65
 
 	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject, CorporateAction)
 
@@ -41,8 +42,9 @@ func TestBasicUnfolding(t *testing.T) {
 	OMSTransactionObject := mapper.OMSTransaction{}
 	OMSTransactionObject.EventName = constants.Unfolding
 	OMSTransactionObject.Symbol = "ALUP4"
-	OMSTransactionObject.Quantity = 5
-	OMSTransactionObject.Price = 9.13
+	OMSTransactionObject.PostEventQuantity = 5
+	OMSTransactionObject.PostEventPrice = 9.13
+	OMSTransactionObject.Amount = 45.65
 
 	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject, CorporateAction)
 
@@ -66,9 +68,10 @@ func TestBasicUpdate(t *testing.T) {
 	OMSTransactionObject.EventName = constants.Update
 	OMSTransactionObject.Symbol = "PASS12"
 	OMSTransactionObject.PostEventSymbol = "PASS5"
-	OMSTransactionObject.Quantity = 10
-	OMSTransactionObject.Price = 8.88
+	OMSTransactionObject.PostEventQuantity = 10
+	OMSTransactionObject.PostEventPrice = 8.88
 	OMSTransactionObject.EventFactor = 0
+	OMSTransactionObject.Amount = 88.8
 
 	OMSTransactionObject = oms.ApplyBasicCorporateAction(OMSTransactionObject, CorporateAction)
 
