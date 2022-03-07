@@ -18,7 +18,7 @@ func ApplyBasicCorporateAction(CEITransaction mapper.CEITransaction, corporate_a
 	CEITransaction.PostEventSymbol = corporate_action.TargetTicker
 	CEITransaction.EventDate = corporate_action.ComDate
 	CEITransaction.PostEventQuantity = float64(CEITransaction.Quantity) / CEITransaction.EventFactor
-	CEITransaction.PostEventPrice = utils.Truncate(CEITransaction.Price*CEITransaction.EventFactor, 2)
+	CEITransaction.PostEventPrice = utils.Truncate(CEITransaction.Amount/CEITransaction.PostEventQuantity, 2)
 
 	// Processo cumulativo
 	CEITransaction.Quantity = utils.Truncate(CEITransaction.PostEventQuantity, 0)

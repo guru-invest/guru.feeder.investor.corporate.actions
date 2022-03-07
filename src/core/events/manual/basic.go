@@ -21,7 +21,7 @@ func ApplyBasicCorporateAction(manualTransaction mapper.ManualTransaction, corpo
 	manualTransaction.PostEventSymbol = corporate_action.TargetTicker
 	manualTransaction.EventDate = corporate_action.ComDate
 	manualTransaction.PostEventQuantity = float64(manualTransaction.Quantity) / manualTransaction.EventFactor
-	manualTransaction.PostEventPrice = utils.Truncate(manualTransaction.Price*manualTransaction.EventFactor, 2)
+	manualTransaction.PostEventPrice = utils.Truncate(manualTransaction.Amount/manualTransaction.PostEventQuantity, 2)
 
 	// Processo cumulativo
 	manualTransaction.Quantity = utils.Truncate(manualTransaction.PostEventQuantity, 0)

@@ -16,7 +16,7 @@ func (h OMSTransactionRepository) getOMSTransactions() ([]mapper.OMSTransaction,
 
 	var oms_transaction []mapper.OMSTransaction
 	err := h._connection._databaseConnection.
-		Select("id, customer_code, broker_id, symbol, quantity, price, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Select("id, customer_code, broker_id, symbol, quantity, price, amount, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Order("trade_date asc").
 		Find(&oms_transaction).
 		Error

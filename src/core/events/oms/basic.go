@@ -19,7 +19,7 @@ func ApplyBasicCorporateAction(OMSTransaction mapper.OMSTransaction, corporate_a
 	OMSTransaction.PostEventSymbol = corporate_action.TargetTicker
 	OMSTransaction.EventDate = corporate_action.ComDate
 	OMSTransaction.PostEventQuantity = OMSTransaction.PostEventQuantity / OMSTransaction.EventFactor
-	OMSTransaction.PostEventPrice = utils.Truncate(OMSTransaction.Price*OMSTransaction.EventFactor, 2)
+	OMSTransaction.PostEventPrice = utils.Truncate(OMSTransaction.Amount/OMSTransaction.PostEventQuantity, 2)
 
 	// Processo cumulativo
 	OMSTransaction.Quantity = int(utils.Truncate(OMSTransaction.PostEventQuantity, 0))
