@@ -12,7 +12,7 @@ const (
 
 const (
 	BonusInvestmentType = 3
-	MinimalPrice        = 0.01
+	MinimalValue        = 0.01
 )
 
 const (
