@@ -8,13 +8,14 @@ func (CEITransaction) TableName() string {
 
 type CEITransaction struct {
 	// Dados de transações
-	ID        int       `gorm:"column:id"`
-	Symbol    string    `gorm:"column:symbol"`
-	BrokerID  float64   `gorm:"column:broker_id"`
-	Quantity  float64   `gorm:"column:quantity"`
-	Price     float64   `gorm:"column:price"`
-	TradeDate time.Time `gorm:"column:trade_date"`
-	Amount    float64   `gorm:"column:amount"`
+	ID           int       `gorm:"column:id"`
+	CustomerCode string    `gorm:"column:customer_code"`
+	Symbol       string    `gorm:"column:symbol"`
+	BrokerID     float64   `gorm:"column:broker_id"`
+	Quantity     float64   `gorm:"column:quantity"`
+	Price        float64   `gorm:"column:price"`
+	TradeDate    time.Time `gorm:"column:trade_date"`
+	Amount       float64   `gorm:"column:amount"`
 
 	// Dados calculados com base nos eventos corporativos
 	PostEventQuantity float64 `gorm:"column:post_event_quantity"`

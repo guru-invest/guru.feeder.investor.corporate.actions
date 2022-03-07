@@ -25,11 +25,15 @@ func Run() {
 func doApplyBasicEvents() {
 	CorporateActionsAsc := repository.GetCorporateActions("asc")
 	CorporateActionsDesc := repository.GetCorporateActions("desc")
-	wg.Add(4)
+	Customers := repository.GetCustomers()
+	Symbols := repository.GetSymbols()
+
+	wg.Add(5)
 	go doBasicOMSEvents(CorporateActionsDesc)
 	go doBasicManualEvents(CorporateActionsDesc)
 	go doBasicCEIEvents(CorporateActionsDesc)
-	go doProceedsOMSEvents(CorporateActionsAsc)
+	go doProceedsOMSEvents(CorporateActionsAsc, Customers, Symbols)
+	go doProceedsCEIEvents(CorporateActionsAsc, Customers, Symbols)
 	wg.Wait()
 }
 
@@ -123,30 +127,60 @@ func doBasicCEIEvents(corporateActions map[string][]mapper.CorporateAction) {
 	repository.UpdateCEITransaction(CEITransactionPersisterObject)
 }
 
-func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
+func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol) {
 	defer wg.Done()
 	OMSTransactions := repository.GetAllOMSTransactions()
-	OMSCustomers := repository.GetCustomers()
-	OMSSymbols := repository.GetSymbols()
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
-	for _, customer := range OMSCustomers {
+	for _, customer := range customers {
 
-		for _, symbol := range OMSSymbols {
+		for _, symbol := range symbols {
 			OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, corporateActions)...)
 
 		}
 	}
 
-	repository.InsertOMSProceeds(OMSProceedPersisterObject)
+	if len(OMSProceedPersisterObject) > 0 {
+		repository.InsertOMSProceeds(OMSProceedPersisterObject)
+	}
 
 	ManualTransactions := []mapper.ManualTransaction{}
 	for _, proceed := range OMSProceedPersisterObject {
 		if proceed.Event == constants.Bonus {
 			ManualTransaction := mapper.ManualTransaction{}
-			ManualTransactions = append(ManualTransactions, manual.ApplyInheritedBonusAction(ManualTransaction, proceed))
+			ManualTransactions = append(ManualTransactions, manual.ApplyInheritedBonusActionOMS(ManualTransaction, proceed))
 		}
 	}
 
-	repository.InsertManualTransaction(ManualTransactions)
+	if len(ManualTransactions) > 0 {
+		repository.InsertManualTransaction(ManualTransactions)
+	}
+}
 
+func doProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol) {
+	defer wg.Done()
+	CEITransactions := repository.GetAllCEITransactions()
+	CEIProceedPersisterObject := []mapper.CEIProceeds{}
+	for _, customer := range customers {
+
+		for _, symbol := range symbols {
+			CEIProceedPersisterObject = append(CEIProceedPersisterObject, cei.ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, CEITransactions, corporateActions)...)
+
+		}
+	}
+
+	if len(CEIProceedPersisterObject) > 0 {
+		repository.InsertCEIProceeds(CEIProceedPersisterObject)
+	}
+
+	ManualTransactions := []mapper.ManualTransaction{}
+	for _, proceed := range CEIProceedPersisterObject {
+		if proceed.Event == constants.Bonus {
+			ManualTransaction := mapper.ManualTransaction{}
+			ManualTransactions = append(ManualTransactions, manual.ApplyInheritedBonusActionCEI(ManualTransaction, proceed))
+		}
+	}
+
+	if len(ManualTransactions) > 0 {
+		repository.InsertManualTransaction(ManualTransactions)
+	}
 }

@@ -9,13 +9,17 @@ import (
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
 
-func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.CEITransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.CEIProceeds {
+func ApplyProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.CEITransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.CEIProceeds {
 	var result = []mapper.CEIProceeds{}
 
 	for _, corporate_action := range corporateActions[symbol] {
 		transaction_by_broker := map[float64]mapper.CEIProceeds{}
 
 		for _, transaction := range transactions[customer] {
+			if transaction.BrokerID == constants.Ideal {
+				continue
+			}
+
 			if _, ok := transaction_by_broker[transaction.BrokerID]; !ok {
 				transaction_by_broker[transaction.BrokerID] = mapper.CEIProceeds{}
 			}
@@ -55,10 +59,6 @@ func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[
 		}
 
 		for broker := range transaction_by_broker {
-
-			if broker == constants.Ideal {
-				continue
-			}
 
 			if entry, ok := transaction_by_broker[broker]; ok {
 				if entry.Quantity > 0 {
