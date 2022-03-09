@@ -10,12 +10,18 @@ type SymbolRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h SymbolRepository) getSymbols() ([]mapper.Symbol, error) {
+func (h SymbolRepository) getSymbols(customers []mapper.Customer) ([]mapper.Symbol, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
 	var symbol []mapper.Symbol
-	err := h._connection._databaseConnection.Distinct("symbol").Find(&symbol).Error
+
+	var in_customers []string
+	for _, value := range customers {
+		in_customers = append(in_customers, value.CustomerCode)
+	}
+
+	err := h._connection._databaseConnection.Distinct("symbol").Where("customer_code in ?", in_customers).Find(&symbol).Error
 	if err != nil {
 		return []mapper.Symbol{}, err
 	}
@@ -23,9 +29,9 @@ func (h SymbolRepository) getSymbols() ([]mapper.Symbol, error) {
 	return symbol, nil
 }
 
-func GetSymbols() []mapper.Symbol {
+func GetSymbols(customers []mapper.Customer) []mapper.Symbol {
 	db := SymbolRepository{}
-	symbols, err := db.getSymbols()
+	symbols, err := db.getSymbols(customers)
 	if err != nil {
 		log.Println(err)
 		return []mapper.Symbol{}

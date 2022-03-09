@@ -10,13 +10,19 @@ type CEITransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h CEITransactionRepository) getCEITransactions() ([]mapper.CEITransaction, error) {
+func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer) ([]mapper.CEITransaction, error) {
 	h._connection.connect()
 	defer h._connection.disconnect()
 
 	var cei_transaction []mapper.CEITransaction
+	var in_customers []string
+	for _, value := range customers {
+		in_customers = append(in_customers, value.CustomerCode)
+	}
+
 	err := h._connection._databaseConnection.
 		Select("id, customer_code, symbol, broker_id, quantity, price, amount, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Where("customer_code in ?", in_customers).
 		Order("trade_date asc").
 		Find(&cei_transaction).
 		Error
@@ -41,9 +47,9 @@ func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.
 	}
 }
 
-func GetCEITransaction() []mapper.CEITransaction {
+func GetCEITransaction(customers []mapper.Customer) []mapper.CEITransaction {
 	db := CEITransactionRepository{}
-	cei_transaction, err := db.getCEITransactions()
+	cei_transaction, err := db.getCEITransactions(customers)
 	if err != nil {
 		log.Println(err)
 		return []mapper.CEITransaction{}
@@ -59,10 +65,10 @@ func UpdateCEITransaction(CEITransaction []mapper.CEITransaction) {
 
 var CEITransactionMap = map[string][]mapper.CEITransaction{}
 
-func GetAllCEITransactions() map[string][]mapper.CEITransaction {
+func GetAllCEITransactions(customers []mapper.Customer) map[string][]mapper.CEITransaction {
 
 	if len(CEITransactionMap) == 0 {
-		allCEITransactions := getAllCEITransactionsMap()
+		allCEITransactions := getAllCEITransactionsMap(customers)
 		for _, transaction := range allCEITransactions {
 			mutex.Lock()
 			CEITransactionMap[transaction.CustomerCode] = append(CEITransactionMap[transaction.CustomerCode], transaction)
@@ -74,9 +80,9 @@ func GetAllCEITransactions() map[string][]mapper.CEITransaction {
 	return CEITransactionMap
 }
 
-func getAllCEITransactionsMap() []mapper.CEITransaction {
+func getAllCEITransactionsMap(customers []mapper.Customer) []mapper.CEITransaction {
 	db := CEITransactionRepository{}
-	cei_transaction, err := db.getCEITransactions()
+	cei_transaction, err := db.getCEITransactions(customers)
 	if err != nil {
 		log.Println(err)
 		return []mapper.CEITransaction{}

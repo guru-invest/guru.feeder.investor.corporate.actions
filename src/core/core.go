@@ -26,20 +26,20 @@ func doApplyBasicEvents() {
 	CorporateActionsAsc := repository.GetCorporateActions("asc")
 	CorporateActionsDesc := repository.GetCorporateActions("desc")
 	Customers := repository.GetCustomers()
-	Symbols := repository.GetSymbols()
+	Symbols := repository.GetSymbols(Customers)
 
 	wg.Add(5)
-	go doBasicOMSEvents(CorporateActionsDesc)
-	go doBasicManualEvents(CorporateActionsDesc)
-	go doBasicCEIEvents(CorporateActionsDesc)
+	go doBasicOMSEvents(Customers, CorporateActionsDesc)
+	go doBasicManualEvents(Customers, CorporateActionsDesc)
+	go doBasicCEIEvents(Customers, CorporateActionsDesc)
 	go doProceedsOMSEvents(CorporateActionsAsc, Customers, Symbols)
 	go doProceedsCEIEvents(CorporateActionsAsc, Customers, Symbols)
 	wg.Wait()
 }
 
-func doBasicOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
+func doBasicOMSEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
-	OMSTransaction := repository.GetOMSTransaction()
+	OMSTransaction := repository.GetOMSTransaction(customers)
 	OMSTransactionPersisterObject := []mapper.OMSTransaction{}
 
 	for _, transaction := range OMSTransaction {
@@ -67,9 +67,9 @@ func doBasicOMSEvents(corporateActions map[string][]mapper.CorporateAction) {
 	repository.UpdateOMSTransaction(OMSTransactionPersisterObject)
 }
 
-func doBasicManualEvents(corporateActions map[string][]mapper.CorporateAction) {
+func doBasicManualEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
-	ManualTransaction := repository.GetManualTransaction()
+	ManualTransaction := repository.GetManualTransaction(customers)
 	ManualTransactionPersisterObject := []mapper.ManualTransaction{}
 
 	for _, transaction := range ManualTransaction {
@@ -97,9 +97,9 @@ func doBasicManualEvents(corporateActions map[string][]mapper.CorporateAction) {
 	repository.UpdateManualTransaction(ManualTransactionPersisterObject)
 }
 
-func doBasicCEIEvents(corporateActions map[string][]mapper.CorporateAction) {
+func doBasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {
 	defer wg.Done()
-	CEITransaction := repository.GetCEITransaction()
+	CEITransaction := repository.GetCEITransaction(customers)
 	CEITransactionPersisterObject := []mapper.CEITransaction{}
 
 	for _, transaction := range CEITransaction {
@@ -129,7 +129,7 @@ func doBasicCEIEvents(corporateActions map[string][]mapper.CorporateAction) {
 
 func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol) {
 	defer wg.Done()
-	OMSTransactions := repository.GetAllOMSTransactions()
+	OMSTransactions := repository.GetAllOMSTransactions(customers)
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
 	for _, customer := range customers {
 
@@ -158,7 +158,7 @@ func doProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, c
 
 func doProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol) {
 	defer wg.Done()
-	CEITransactions := repository.GetAllCEITransactions()
+	CEITransactions := repository.GetAllCEITransactions(customers)
 	CEIProceedPersisterObject := []mapper.CEIProceeds{}
 	for _, customer := range customers {
 

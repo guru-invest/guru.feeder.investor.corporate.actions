@@ -15,7 +15,7 @@ func (h CustomerRepository) getCustomers() ([]mapper.Customer, error) {
 	defer h._connection.disconnect()
 
 	var customer []mapper.Customer
-	err := h._connection._databaseConnection.Distinct("customer_code").Find(&customer).Error
+	err := h._connection._databaseConnection.Distinct("customer_code").Where("execution_status = ?", "SUCCESS").Find(&customer).Error
 	if err != nil {
 		return []mapper.Customer{}, err
 	}

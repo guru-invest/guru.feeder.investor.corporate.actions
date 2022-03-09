@@ -1,7 +1,7 @@
 package mapper
 
 func (Customer) TableName() string {
-	return "wallet.oms_transactions"
+	return "wallet.cei_items_status"
 }
 
 type Customer struct {
