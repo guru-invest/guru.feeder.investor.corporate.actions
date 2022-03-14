@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/guru-invest/guru.framework v0.0.0-20211223124941-505e4113d68b
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/sirupsen/logrus v1.8.1
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
