@@ -24,22 +24,33 @@ func Run() {
 
 var CorporateActionsAsc map[string][]mapper.CorporateAction
 var CorporateActionsDesc map[string][]mapper.CorporateAction
-var Customers []mapper.Customer
-var Symbols []mapper.Symbol
+
+var OMSCustomers []mapper.Customer
+var ManualCustomers []mapper.Customer
+var CEICustomers []mapper.Customer
+
+var OMSSymbols []mapper.Symbol
+var ManualSymbols []mapper.Symbol
+var CEISymbols []mapper.Symbol
 
 func doApplyEvents(customerCode string) {
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
 	if customerCode == constants.AllCustomers {
-		Customers = repository.GetCustomers()
+		OMSCustomers = repository.GetOMSCustomers()
+		ManualCustomers = repository.GetManualCustomers()
+		CEICustomers = repository.GetCEICustomers()
 	} else {
 		Customer := mapper.Customer{}
 		Customer.CustomerCode = customerCode
-		Customers = append(Customers, Customer)
+		OMSCustomers = append(OMSCustomers, Customer)
+		ManualCustomers = append(ManualCustomers, Customer)
+		CEICustomers = append(CEICustomers, Customer)
 	}
 
-	Symbols = repository.GetSymbols(Customers)
+	OMSSymbols = repository.GetSymbols(OMSCustomers)
+	CEISymbols = repository.GetSymbols(CEICustomers)
 
 	wg.Add(5)
 	go doBasicOMSEvents()
@@ -52,25 +63,25 @@ func doApplyEvents(customerCode string) {
 
 func doBasicOMSEvents() {
 	defer wg.Done()
-	oms.BasicOMSEvents(Customers, CorporateActionsDesc)
+	oms.BasicOMSEvents(OMSCustomers, CorporateActionsDesc)
 }
 
 func doBasicManualEvents() {
 	defer wg.Done()
-	manual.BasicManualEvents(Customers, CorporateActionsDesc)
+	manual.BasicManualEvents(ManualCustomers, CorporateActionsDesc)
 }
 
 func doBasicCEIEvents() {
 	defer wg.Done()
-	cei.BasicCEIEvents(Customers, CorporateActionsDesc)
+	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc)
 }
 
 func doProceedsOMSEvents() {
 	defer wg.Done()
-	oms.ProceedsOMSEvents(CorporateActionsAsc, Customers, Symbols)
+	oms.ProceedsOMSEvents(CorporateActionsAsc, OMSCustomers, OMSSymbols)
 }
 
 func doProceedsCEIEvents() {
 	defer wg.Done()
-	cei.ProceedsCEIEvents(CorporateActionsAsc, Customers, Symbols)
+	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols)
 }
