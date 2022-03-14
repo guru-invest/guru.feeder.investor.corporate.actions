@@ -27,3 +27,7 @@ const (
 const (
 	Ideal = 1618
 )
+
+const (
+	AllCustomers = "0"
+)
