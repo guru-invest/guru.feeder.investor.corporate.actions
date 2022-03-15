@@ -17,7 +17,7 @@ var wg sync.WaitGroup
 
 func Run() {
 	start := time.Now()
-	doApplyEvents(constants.AllCustomers)
+	ApplyEvents(constants.AllCustomers)
 	elapsed := time.Since(start)
 	fmt.Printf("Processs took %s\n", elapsed)
 }
@@ -33,7 +33,7 @@ var OMSSymbols []mapper.Symbol
 var ManualSymbols []mapper.Symbol
 var CEISymbols []mapper.Symbol
 
-func doApplyEvents(customerCode string) {
+func ApplyEvents(customerCode string) {
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
