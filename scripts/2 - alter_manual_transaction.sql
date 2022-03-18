@@ -6,6 +6,8 @@ ALTER TABLE wallet.manual_transactions ADD event_date timestamp default '2001-01
 ALTER TABLE wallet.manual_transactions ADD event_name text default 'PADRAO';
 ALTER TABLE wallet.manual_transactions ADD hash_id text;
 
+update wallet.manual_transactions set post_event_symbol = symbol, post_event_quantity = quantity, post_event_price = price;
+
 CREATE UNIQUE INDEX manual_transactions_hash_id_idx ON wallet.manual_transactions (hash_id);
 
 CREATE or replace FUNCTION wallet.manual_transactions_after_insert() RETURNS trigger AS $$

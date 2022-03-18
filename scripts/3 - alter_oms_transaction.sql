@@ -6,6 +6,8 @@ ALTER TABLE wallet.oms_transactions ADD event_date timestamp default '2001-01-01
 ALTER TABLE wallet.oms_transactions ADD event_name text default 'PADRAO';
 
 
+update wallet.oms_transactions set post_event_symbol = symbol, post_event_quantity = quantity, post_event_price = price;
+
 
 CREATE or replace FUNCTION wallet.oms_transactions_after_insert() RETURNS trigger AS $$
     BEGIN
