@@ -14,6 +14,8 @@ type ManualProceeds struct {
 	Quantity     float64   `gorm:"column:quantity"`
 	Value        float64   `gorm:"column:value"`
 	Amount       float64   `gorm:"column:amount"`
-	Date         time.Time `gorm:"column:date"`
 	Event        string    `gorm:"column:event"`
+	InitialDate  time.Time `gorm:"column:initial_date"`
+	ComDate      time.Time `gorm:"column:com_date"`
+	PaymentDate  time.Time `gorm:"column:payment_date"`
 }

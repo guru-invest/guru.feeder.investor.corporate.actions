@@ -31,4 +31,5 @@ type CorporateAction struct {
 	ComDate          time.Time `gorm:"column:com_date"`
 	TargetTicker     string    `gorm:"column:target_ticker"`
 	CalculatedFactor float64   `gorm:"column:calculated_factor"`
+	InitialDate      time.Time `gorm:"column:initial_date"`
 }

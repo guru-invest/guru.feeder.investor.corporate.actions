@@ -49,8 +49,8 @@ func ApplyEvents(customerCode string) {
 		CEICustomers = append(CEICustomers, Customer)
 	}
 
-	OMSSymbols = repository.GetSymbols(OMSCustomers)
-	CEISymbols = repository.GetSymbols(CEICustomers)
+	OMSSymbols = repository.GetOMSSymbols(OMSCustomers)
+	CEISymbols = repository.GetCEISymbols(CEICustomers)
 
 	wg.Add(5)
 	go doBasicOMSEvents()

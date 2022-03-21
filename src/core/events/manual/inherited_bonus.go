@@ -18,9 +18,9 @@ func ApplyInheritedBonusActionOMS(manualTransaction mapper.ManualTransaction, pr
 		manualTransaction.Price = constants.MinimalValue
 		manualTransaction.Amount = constants.MinimalValue
 		manualTransaction.Side = constants.Purchase
-		manualTransaction.TradeDate = proceed.Date // TODO com_date ou initial_date do evento ?
+		manualTransaction.TradeDate = proceed.PaymentDate // TODO - Validar com TOM
 		manualTransaction.SourceType = constants.ManualSourceType
-		manualTransaction.EventDate = proceed.Date
+		manualTransaction.EventDate = proceed.InitialDate
 		manualTransaction.EventName = proceed.Event
 
 		StringID := fmt.Sprintf("%s %f %d %s %f %f %f %d %s %s %s %s",
@@ -56,9 +56,9 @@ func ApplyInheritedBonusActionCEI(manualTransaction mapper.ManualTransaction, pr
 		manualTransaction.Price = constants.MinimalValue
 		manualTransaction.Amount = constants.MinimalValue
 		manualTransaction.Side = constants.Purchase
-		manualTransaction.TradeDate = proceed.Date // TODO com_date ou initial_date do evento ?
+		manualTransaction.TradeDate = proceed.PaymentDate // TODO - Validar com TOM
 		manualTransaction.SourceType = constants.ManualSourceType
-		manualTransaction.EventDate = proceed.Date
+		manualTransaction.EventDate = proceed.InitialDate
 		manualTransaction.EventName = proceed.Event
 
 		StringID := fmt.Sprintf("%s %f %d %s %f %f %f %d %s %s %s %s",
