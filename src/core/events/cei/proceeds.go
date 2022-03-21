@@ -32,6 +32,10 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 				continue
 			}
 
+			if corporate_action.PaymentDate.Year() == 0 {
+				continue
+			}
+
 			if corporate_action.IsCashProceeds() {
 				transaction_by_broker[transaction.BrokerID] =
 					applyCashProceeds(
@@ -95,14 +99,18 @@ func applyCashProceeds(customer, symbol string, transaction_by_broker map[float6
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 		entry.CustomerCode = customer
 		entry.Symbol = symbol
-		entry.Quantity = float64(transaction.Quantity)*corporate_action.Value + float64(transaction.Quantity)
+		entry.Quantity = transaction.Quantity
 		entry.Quantity = utils.Truncate(entry.Quantity, 0)
 		entry.Value = corporate_action.Value
+
 		entry.Amount = entry.Quantity * entry.Value
+		if corporate_action.Description == constants.InterestOnEquity {
+			entry.Amount = entry.Amount - (entry.Amount * constants.InterestOnEquityIRPercent)
+		}
+
 		entry.Event = corporate_action.Description
 		entry.InitialDate = corporate_action.InitialDate
 		entry.ComDate = corporate_action.ComDate
-		entry.PaymentDate = corporate_action.PaymentDate
 		return entry
 	}
 	return mapper.CEIProceeds{}
@@ -118,7 +126,7 @@ func applyBonusProceeds(customer, symbol string, transaction_by_broker map[float
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 		entry.CustomerCode = customer
 		entry.Symbol = symbol
-		entry.Quantity = float64(transaction.Quantity)*corporate_action.Value + float64(transaction.Quantity)
+		entry.Quantity = transaction.Quantity
 		entry.Quantity = utils.Truncate(entry.Quantity, 0)
 		entry.Value = corporate_action.Value
 		entry.Amount = utils.Truncate((entry.Quantity / entry.Value), 0)

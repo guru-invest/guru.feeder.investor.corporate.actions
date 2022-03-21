@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"fmt"
 
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.corporate.actions/src/utils"
 )
@@ -27,15 +28,24 @@ func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[
 				continue
 			}
 
+			if corporate_action.PaymentDate.Year() == 0 {
+				continue
+			}
+
 			if corporate_action.IsCashProceeds() {
 
 				if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 					entry.CustomerCode = customer
 					entry.Symbol = symbol
-					entry.Quantity = float64(transaction.Quantity)*corporate_action.Value + float64(transaction.Quantity)
+					entry.Quantity = transaction.Quantity
 					entry.Quantity = utils.Truncate(entry.Quantity, 0)
 					entry.Value = corporate_action.Value
+
 					entry.Amount = entry.Quantity * entry.Value
+					if corporate_action.Description == constants.InterestOnEquity {
+						entry.Amount = entry.Amount - (entry.Amount * constants.InterestOnEquityIRPercent)
+					}
+
 					entry.Event = corporate_action.Description
 					entry.InitialDate = corporate_action.InitialDate
 					entry.ComDate = corporate_action.ComDate

@@ -31,3 +31,7 @@ const (
 const (
 	AllCustomers = "0"
 )
+
+const (
+	InterestOnEquityIRPercent = 0.15
+)
