@@ -99,8 +99,13 @@ func applyCashProceeds(customer, symbol string, transaction_by_broker map[float6
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 		entry.CustomerCode = customer
 		entry.Symbol = symbol
-		entry.Quantity = float64(transaction.Quantity)
+
+		if transaction.Side == constants.Sale {
+			transaction.Quantity = transaction.Quantity * -1
+		}
+		entry.Quantity += float64(transaction.Quantity)
 		entry.Quantity = utils.Truncate(entry.Quantity, 0)
+
 		entry.Value = corporate_action.Value
 
 		entry.Amount = entry.Quantity * entry.Value
@@ -127,7 +132,7 @@ func applyBonusProceeds(customer, symbol string, transaction_by_broker map[float
 	if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 		entry.CustomerCode = customer
 		entry.Symbol = symbol
-		entry.Quantity = float64(transaction.Quantity)
+		entry.Quantity += float64(transaction.Quantity)
 		entry.Quantity = utils.Truncate(entry.Quantity, 0)
 		entry.Value = corporate_action.Value
 		entry.Amount = utils.Truncate((entry.Quantity / entry.Value), 0)

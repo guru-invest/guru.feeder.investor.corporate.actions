@@ -37,10 +37,14 @@ func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[
 				if entry, ok := transaction_by_broker[transaction.BrokerID]; ok {
 					entry.CustomerCode = customer
 					entry.Symbol = symbol
-					entry.Quantity = transaction.Quantity
-					entry.Quantity = utils.Truncate(entry.Quantity, 0)
-					entry.Value = corporate_action.Value
 
+					if transaction.Side == constants.Sale {
+						transaction.Quantity = transaction.Quantity * -1
+					}
+					entry.Quantity += transaction.Quantity
+					entry.Quantity = utils.Truncate(entry.Quantity, 0)
+
+					entry.Value = corporate_action.Value
 					entry.Amount = entry.Quantity * entry.Value
 					if corporate_action.Description == constants.InterestOnEquity {
 						entry.Amount = entry.Amount - (entry.Amount * constants.InterestOnEquityIRPercent)
