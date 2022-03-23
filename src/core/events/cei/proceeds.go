@@ -100,7 +100,7 @@ func applyCashProceeds(customer, symbol string, transaction_by_broker map[float6
 		entry.CustomerCode = customer
 		entry.Symbol = symbol
 
-		if transaction.Side == constants.Sale {
+		if transaction.Side == constants.Sale && transaction.Quantity > 0 {
 			transaction.Quantity = transaction.Quantity * -1
 		}
 		entry.Quantity += transaction.Quantity

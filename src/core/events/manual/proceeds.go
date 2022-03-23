@@ -38,7 +38,7 @@ func ApplyCashProceedsCorporateAction(customer, symbol string, transactions map[
 					entry.CustomerCode = customer
 					entry.Symbol = symbol
 
-					if transaction.Side == constants.Sale {
+					if transaction.Side == constants.Sale && transaction.Quantity > 0 {
 						transaction.Quantity = transaction.Quantity * -1
 					}
 					entry.Quantity += transaction.Quantity
