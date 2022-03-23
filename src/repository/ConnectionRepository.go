@@ -20,13 +20,12 @@ func (db *DatabaseConnection) connect() {
 
 	DATABASE := options.OPTIONS.DATABASE
 	dsn := fmt.Sprintf(
-		"user=%s password=%s dbname=%s host=%s port=%s TimeZone=%s",
+		"user=%s password=%s dbname=%s host=%s port=%s",
 		DATABASE.Username,
 		DATABASE.Password,
 		DATABASE.Database,
 		DATABASE.Url,
-		DATABASE.Port,
-		"America/Sao_Paulo")
+		DATABASE.Port)
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
