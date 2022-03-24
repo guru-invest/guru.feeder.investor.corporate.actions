@@ -14,7 +14,7 @@ func BasicManualEvents(customers []mapper.Customer, corporateActions map[string]
 		for _, corporate_action := range corporateActions[transaction.Symbol] {
 
 			// Se a data de InitialDate for maior, significa que eu não precios aplicar este evento nesta transação
-			if transaction.TradeDate.After(corporate_action.InitialDate) {
+			if transaction.TradeDate.After(corporate_action.InitialDate) && !transaction.TradeDate.Equal(corporate_action.InitialDate) {
 				continue
 			}
 

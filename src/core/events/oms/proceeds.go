@@ -28,7 +28,7 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 				continue
 			}
 
-			if transaction.TradeDate.After(corporate_action.ComDate) {
+			if transaction.TradeDate.After(corporate_action.InitialDate) && !transaction.TradeDate.Equal(corporate_action.InitialDate) {
 				continue
 			}
 
