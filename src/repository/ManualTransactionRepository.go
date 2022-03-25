@@ -3,6 +3,7 @@ package repository
 import (
 	"log"
 
+	"github.com/guru-invest/guru.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
 	"gorm.io/gorm/clause"
 )
@@ -23,7 +24,7 @@ func (h ManualTransactionRepository) getManualTransactions(customers []mapper.Cu
 
 	err := h._connection._databaseConnection.
 		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, source_type, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
-		Where("customer_code in ?", in_customers).
+		Where("customer_code in ? and event_name <> ?", in_customers, constants.Bonus).
 		Order("trade_date asc").
 		Find(&manual_transaction).
 		Error
