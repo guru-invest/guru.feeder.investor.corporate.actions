@@ -33,11 +33,12 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 				continue
 			}
 
-			if corporate_action.PaymentDate.Year() == 0 {
-				continue
-			}
-
 			if corporate_action.IsCashProceeds() {
+
+				if corporate_action.PaymentDate.Year() == 0 {
+					continue
+				}
+
 				transaction_by_broker[transaction.BrokerID] =
 					applyCashProceeds(
 						customer,
