@@ -30,41 +30,42 @@ func newTransactionObject(symbol string, quantity int, price float64, trade_date
 	return result
 }
 
-func newCorporateActionObject(description string, value float64, com_date time.Time) mapper.CorporateAction {
+func newCorporateActionObject(description string, value float64, initial_date time.Time) mapper.CorporateAction {
 	result := mapper.CorporateAction{}
 	result.Description = description
 	result.Value = value
-	result.ComDate = com_date
+	result.InitialDate = initial_date
 	return result
 }
 
 func TestProceedsCash(t *testing.T) {
 
 	// Dados chave para identificação dos ativos por usuários
-	Customer := "fzVzgo8b"
+	Customer := "WpLhDUh4"
 
 	// Mock de transações
 	OMSTransactionObjects := []mapper.OMSTransaction{}
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 3, 27.41, StrToDate("2021-07-20 11:40:26"), 1618))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 5, 26.68, StrToDate("2021-07-26 10:29:32"), 1618))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 29, 26.68, StrToDate("2021-07-26 10:29:32"), 1618))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.69, StrToDate("2021-07-28 8:11:05"), 1618))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 1, 25.67, StrToDate("2021-07-28 8:13:40"), 1618))
-	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BIDI4", 20, 9.47, StrToDate("2022-01-03 11:34:38"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", 10, 31.66, StrToDate("2021-07-06 09:40:42"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", -10, 32.38, StrToDate("2021-07-12 10:51:08"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", 37, 32.16, StrToDate("2021-08-09 07:17:34"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", 5, 29.63, StrToDate("2021-08-19 07:26:58"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", -2, 28.17, StrToDate("2021-09-21 07:18:03"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", -10, 28.48, StrToDate("2022-01-10 07:04:48"), 1618))
+	OMSTransactionObjects = append(OMSTransactionObjects, newTransactionObject("BBAS3", -30, 28.48, StrToDate("2022-01-10 07:04:48"), 1618))
 	// Agrupamento das transações em um map com chave por usuário
 	OMSTransactions := map[string][]mapper.OMSTransaction{}
 	OMSTransactions[Customer] = OMSTransactionObjects
 
 	// Mock de eventos corporativos
 	CorporateActionObjects := []mapper.CorporateAction{}
-	CorporateActionObjects = append(CorporateActionObjects, newCorporateActionObject("JRS CAP PROPRIO", 0.012084364, StrToDate("2021-07-22 0:00:00")))
+	CorporateActionObjects = append(CorporateActionObjects, newCorporateActionObject("RENDIMENTO", 0.00269997702, StrToDate("2021-08-24 0:00:00")))
 	// Agrupamento dos eventos corporativos em um map com chave por symbol
 	CorporateActions := map[string][]mapper.CorporateAction{}
-	CorporateActions["BIDI4"] = CorporateActionObjects
+	CorporateActions["BBAS3"] = CorporateActionObjects
 
 	// Processamento
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
-	OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(Customer, "BIDI4", OMSTransactions, CorporateActions)...)
+	OMSProceedPersisterObject = append(OMSProceedPersisterObject, oms.ApplyProceedsCorporateAction(Customer, "BBAS3", OMSTransactions, CorporateActions)...)
 
 	// Teste
 	ExpectedProceedsCount := 1
@@ -72,35 +73,21 @@ func TestProceedsCash(t *testing.T) {
 		t.Errorf("TestProceeds Count: Esperado (%d), Recebido (%d)", ExpectedProceedsCount, len(OMSProceedPersisterObject))
 	}
 
-	ExpectedProceedsSymbol := "BIDI4"
-	if OMSProceedPersisterObject[0].Symbol != ExpectedProceedsSymbol {
-		t.Errorf("TestProceeds Symbol: Esperado (%s), Recebido (%s)", ExpectedProceedsSymbol, OMSProceedPersisterObject[0].Symbol)
-	}
-
-	ExpectedProceedsQuantity := 3
+	ExpectedProceedsQuantity := 42
 	if int(OMSProceedPersisterObject[0].Quantity) != ExpectedProceedsQuantity {
 		t.Errorf("TestProceeds Quantity: Esperado (%d), Recebido (%d)", ExpectedProceedsQuantity, int(OMSProceedPersisterObject[0].Quantity))
 	}
 
-	ExpectedProceedsValue := 0.012084364
+	ExpectedProceedsValue := 0.0
 	if OMSProceedPersisterObject[0].Value != ExpectedProceedsValue {
 		t.Errorf("TestProceeds Value: Esperado (%f), Recebido (%f)", ExpectedProceedsValue, OMSProceedPersisterObject[0].Value)
 	}
 
-	ExpectedProceedsAmount := 0.036253092
+	ExpectedProceedsAmount := 0.09
 	if OMSProceedPersisterObject[0].Amount != ExpectedProceedsAmount {
 		t.Errorf("TestProceeds Amount: Esperado (%f), Recebido (%f)", ExpectedProceedsAmount, OMSProceedPersisterObject[0].Amount)
 	}
 
-	ExpectedProceedsComDate := StrToDate("2021-07-22 00:00:00")
-	if OMSProceedPersisterObject[0].Date != ExpectedProceedsComDate {
-		t.Errorf("TestProceeds Amount: Esperado (%s), Recebido (%s)", ExpectedProceedsComDate.String(), OMSProceedPersisterObject[0].Date.String())
-	}
-
-	ExpectedProceedsEvent := "JRS CAP PROPRIO"
-	if OMSProceedPersisterObject[0].Event != ExpectedProceedsEvent {
-		t.Errorf("TestProceeds Amount: Esperado (%s), Recebido (%s)", ExpectedProceedsEvent, OMSProceedPersisterObject[0].Event)
-	}
 }
 
 func TestProceedsBonus(t *testing.T) {
@@ -152,11 +139,6 @@ func TestProceedsBonus(t *testing.T) {
 	ExpectedProceedsAmount := 8.0
 	if OMSProceedPersisterObject[0].Amount != ExpectedProceedsAmount {
 		t.Errorf("TestProceeds Amount: Esperado (%f), Recebido (%f)", ExpectedProceedsAmount, OMSProceedPersisterObject[0].Amount)
-	}
-
-	ExpectedProceedsComDate := StrToDate("2021-12-20 0:00:00")
-	if OMSProceedPersisterObject[0].Date != ExpectedProceedsComDate {
-		t.Errorf("TestProceeds Amount: Esperado (%s), Recebido (%s)", ExpectedProceedsComDate.String(), OMSProceedPersisterObject[0].Date.String())
 	}
 
 	ExpectedProceedsEvent := "BONIFICACAO"
