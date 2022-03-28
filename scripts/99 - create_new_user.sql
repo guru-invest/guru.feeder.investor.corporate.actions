@@ -1,3 +1,32 @@
 CREATE USER guru_feeder_investor_corporate_actions WITH ENCRYPTED PASSWORD <mypass>;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA financial, wallet TO guru_feeder_investor_corporate_actions;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA financial, wallet TO guru_feeder_investor_corporate_actions;
+
+
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE financial.corporate_actions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE financial.corporate_actions_id_seq TO guru_corporate_actions;
+GRANT USAGE ON SCHEMA financial TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.brokers TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.brokers_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.cei_items_status TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.cei_items_status_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.cei_positions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.cei_positions_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.cei_proventos TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.cei_transactions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.cei_transactions_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.cripto_positions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.cripto_positions_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.cripto_transactions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.cripto_transactions_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.manual_positions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.manual_positions_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.manual_proventos TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.manual_transactions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.manual_transactions_id_seq TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.oms_positions TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.oms_proventos TO guru_corporate_actions;
+GRANT SELECT, REFERENCES, TRIGGER, DELETE, INSERT, UPDATE, TRUNCATE ON TABLE wallet.oms_transactions TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.positions_id_seq TO guru_corporate_actions;
+GRANT SELECT, USAGE, UPDATE ON SEQUENCE wallet.transactions_id_seq TO guru_corporate_actions;
+GRANT USAGE ON SCHEMA wallet TO guru_corporate_actions;
