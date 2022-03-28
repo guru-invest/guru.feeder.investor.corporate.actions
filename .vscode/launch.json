@@ -13,7 +13,7 @@
             "env": {
                 "CONSUL_URL": "http://consul.qa.guruapi.com",
                 "CONSUL_CONTEXT": "/v1/kv",
-                "CONSUL_SERVICE": "/guru.feeder.investor.corporate.actions"
+                "CONSUL_SERVICE": "/investor/guru.feeder.investor.corporate.actions"
             },
             "args": []
         }
