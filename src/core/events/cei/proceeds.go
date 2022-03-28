@@ -4,9 +4,9 @@ import (
 	"crypto/sha1"
 	"fmt"
 
-	"github.com/guru-invest/guru.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
-	"github.com/guru-invest/guru.corporate.actions/src/utils"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/utils"
 )
 
 func ApplyProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.CEITransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.CEIProceeds {

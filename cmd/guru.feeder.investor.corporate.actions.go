@@ -6,8 +6,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/core"
-	"github.com/guru-invest/guru.corporate.actions/src/crossCutting/options"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/crossCutting/options"
 	"github.com/robfig/cron/v3"
 )
 

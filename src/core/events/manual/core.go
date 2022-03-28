@@ -1,8 +1,8 @@
 package manual
 
 import (
-	"github.com/guru-invest/guru.corporate.actions/src/repository"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
 func BasicManualEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {

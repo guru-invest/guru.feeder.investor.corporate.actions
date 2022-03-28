@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceRoot}/cmd/guru.corporate.actions.go",
+            "program": "${workspaceRoot}/cmd/guru.feeder.investor.corporate.actions.go",
             "env": {
                 "CONSUL_URL": "http://consul.qa.guruapi.com",
                 "CONSUL_CONTEXT": "/v1/kv",

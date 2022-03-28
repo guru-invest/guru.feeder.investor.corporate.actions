@@ -1,1 +1,1 @@
-# guru.corporate.actions
+# guru.feeder.investor.corporate.actions

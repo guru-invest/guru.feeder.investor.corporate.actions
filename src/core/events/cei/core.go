@@ -1,10 +1,10 @@
 package cei
 
 import (
-	"github.com/guru-invest/guru.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.corporate.actions/src/core/events/manual"
-	"github.com/guru-invest/guru.corporate.actions/src/repository"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
 func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {

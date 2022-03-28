@@ -1,4 +1,4 @@
-module github.com/guru-invest/guru.corporate.actions
+module github.com/guru-invest/guru.feeder.investor.corporate.actions
 
 go 1.17
 

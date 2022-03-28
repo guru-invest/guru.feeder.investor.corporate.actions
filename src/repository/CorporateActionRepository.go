@@ -4,8 +4,8 @@ import (
 	"log"
 	"sync"
 
-	"github.com/guru-invest/guru.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
 type CorporateActionRepository struct {

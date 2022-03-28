@@ -4,8 +4,8 @@ import (
 	"crypto/sha1"
 	"fmt"
 
-	"github.com/guru-invest/guru.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
 func ApplyInheritedBonusActionOMS(manualTransaction mapper.ManualTransaction, proceed mapper.OMSProceeds) mapper.ManualTransaction {

@@ -5,12 +5,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.corporate.actions/src/core/events/cei"
-	"github.com/guru-invest/guru.corporate.actions/src/core/events/manual"
-	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
-	"github.com/guru-invest/guru.corporate.actions/src/repository"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/cei"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/oms"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
 var wg sync.WaitGroup

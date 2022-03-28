@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/crossCutting/options"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/crossCutting/options"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

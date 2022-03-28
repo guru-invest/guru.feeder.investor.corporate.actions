@@ -3,8 +3,8 @@ package mapper
 import (
 	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.corporate.actions/src/utils"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/utils"
 )
 
 func (h CorporateAction) IsBasic() bool {

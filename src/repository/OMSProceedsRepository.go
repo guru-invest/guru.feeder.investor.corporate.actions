@@ -3,7 +3,7 @@ package repository
 import (
 	"log"
 
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 	"gorm.io/gorm/clause"
 )
 

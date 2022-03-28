@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/guru-invest/guru.corporate.actions/src/core/events/oms"
-	"github.com/guru-invest/guru.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/oms"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
 func StrToDate(dateAsText string) time.Time {
