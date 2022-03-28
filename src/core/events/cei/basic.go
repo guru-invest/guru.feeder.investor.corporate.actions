@@ -21,8 +21,8 @@ func ApplyBasicCorporateAction(CEITransaction mapper.CEITransaction, corporate_a
 	CEITransaction.PostEventPrice = utils.Truncate(CEITransaction.Amount/CEITransaction.PostEventQuantity, 2)
 
 	// Processo cumulativo
-	CEITransaction.Quantity = utils.Truncate(CEITransaction.PostEventQuantity, 0)
-	CEITransaction.Price = CEITransaction.PostEventPrice
+	// CEITransaction.Quantity = utils.Truncate(CEITransaction.PostEventQuantity, 0)
+	// CEITransaction.Price = CEITransaction.PostEventPrice
 
 	return CEITransaction
 }

@@ -24,8 +24,8 @@ func ApplyBasicCorporateAction(manualTransaction mapper.ManualTransaction, corpo
 	manualTransaction.PostEventPrice = utils.Truncate(manualTransaction.Amount/manualTransaction.PostEventQuantity, 2)
 
 	// Processo cumulativo
-	manualTransaction.Quantity = utils.Truncate(manualTransaction.PostEventQuantity, 0)
-	manualTransaction.Price = manualTransaction.PostEventPrice
+	// manualTransaction.Quantity = utils.Truncate(manualTransaction.PostEventQuantity, 0)
+	// manualTransaction.Price = manualTransaction.PostEventPrice
 
 	StringID := fmt.Sprintf("%s %f %d %s %f %f %f %d %s %s %s %s",
 		manualTransaction.CustomerCode,
