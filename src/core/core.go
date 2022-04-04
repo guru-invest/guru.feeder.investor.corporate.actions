@@ -61,6 +61,23 @@ func ApplyEvents(customerCode string) {
 	wg.Wait()
 }
 
+func ApplyEventsAfterInvestorSync(customerCode string) {
+	CorporateActionsAsc = repository.GetCorporateActions("asc")
+	CorporateActionsDesc = repository.GetCorporateActions("desc")
+
+	Customer := mapper.Customer{}
+	Customer.CustomerCode = customerCode
+
+	CEICustomers = append(CEICustomers, Customer)
+
+	CEISymbols = repository.GetCEISymbols(CEICustomers)
+
+	wg.Add(2)
+	go doBasicCEIEvents()
+	go doProceedsCEIEvents()
+	wg.Wait()
+}
+
 func doBasicOMSEvents() {
 	defer wg.Done()
 	oms.BasicOMSEvents(OMSCustomers, CorporateActionsDesc)

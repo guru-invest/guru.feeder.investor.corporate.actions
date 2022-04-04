@@ -18,6 +18,8 @@ func init() {
 func main() {
 	time_zone, _ := time.LoadLocation("America/Sao_Paulo")
 
+	core.Run()
+
 	c := cron.New(cron.WithLocation(time_zone))
 	c.AddFunc("30 2 * * *", func() { core.Run() })
 	go c.Start()

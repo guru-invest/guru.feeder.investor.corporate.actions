@@ -40,7 +40,7 @@ func ProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	OMSTransactions := repository.GetAllOMSTransactions(customers)
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
 	for _, customer := range customers {
-
+		//talez aqui
 		for _, symbol := range symbols {
 			OMSProceedPersisterObject = append(OMSProceedPersisterObject, ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, corporateActions)...)
 
