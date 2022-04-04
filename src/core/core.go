@@ -9,6 +9,7 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/cei"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/oms"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/crossCutting/options"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
@@ -62,6 +63,7 @@ func ApplyEvents(customerCode string) {
 }
 
 func ApplyEventsAfterInvestorSync(customerCode string) error {
+	options.OPTIONS.Load()
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
