@@ -61,7 +61,7 @@ func ApplyEvents(customerCode string) {
 	wg.Wait()
 }
 
-func ApplyEventsAfterInvestorSync(customerCode string) {
+func ApplyEventsAfterInvestorSync(customerCode string) error {
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
@@ -76,6 +76,8 @@ func ApplyEventsAfterInvestorSync(customerCode string) {
 	go doBasicCEIEvents()
 	go doProceedsCEIEvents()
 	wg.Wait()
+
+	return nil
 }
 
 func doBasicOMSEvents() {
