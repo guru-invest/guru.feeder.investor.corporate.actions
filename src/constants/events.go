@@ -11,7 +11,7 @@ const (
 )
 
 const (
-	BonusInvestmentType = 3
+	BonusInvestmentType = 33
 	MinimalValue        = 0.01
 )
 
@@ -21,7 +21,7 @@ const (
 )
 
 const (
-	ManualSourceType = "Manual"
+	ManualSourceType = "REGULAR"
 )
 
 const (

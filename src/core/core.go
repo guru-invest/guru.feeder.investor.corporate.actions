@@ -60,6 +60,7 @@ func ApplyEvents(customerCode string) {
 	go doProceedsOMSEvents()
 	go doProceedsCEIEvents()
 	wg.Wait()
+	fmt.Println("Finalizou")
 }
 
 func ApplyEventsAfterInvestorSync(customerCode string) error {
