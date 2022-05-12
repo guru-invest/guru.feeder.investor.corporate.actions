@@ -18,7 +18,7 @@ func init() {
 func main() {
 	time_zone, _ := time.LoadLocation("America/Sao_Paulo")
 
-	//core.ApplyEvents("Ayqi8gfb")
+	//core.ApplyEvents("fzVzgo8b")
 	//core.ApplyEventsAfterInvestorSync("fzVzgo8b")
 	//core.Run()
 

@@ -18,8 +18,8 @@ func ApplyInheritedBonusActionOMS(manualTransaction mapper.ManualTransaction, pr
 		manualTransaction.Price = constants.MinimalValue
 		manualTransaction.Amount = constants.MinimalValue
 		manualTransaction.Side = constants.Purchase
-		manualTransaction.TradeDate = proceed.PaymentDate // TODO - Validar com TOM
-		manualTransaction.SourceType = constants.ManualSourceType
+		manualTransaction.TradeDate = proceed.InitialDate // TODO - Validar com TOM
+		manualTransaction.SourceType = constants.BonusOMSSourceType
 		manualTransaction.EventDate = proceed.InitialDate
 		manualTransaction.EventName = proceed.Event
 
@@ -32,7 +32,7 @@ func ApplyInheritedBonusActionOMS(manualTransaction mapper.ManualTransaction, pr
 			manualTransaction.Price,
 			manualTransaction.Amount,
 			manualTransaction.Side,
-			manualTransaction.TradeDate.Format("02/01/2006"),
+			manualTransaction.TradeDate.String(),
 			manualTransaction.SourceType,
 			manualTransaction.EventDate.String(),
 			manualTransaction.EventName,
@@ -56,8 +56,8 @@ func ApplyInheritedBonusActionCEI(manualTransaction mapper.ManualTransaction, pr
 		manualTransaction.Price = constants.MinimalValue
 		manualTransaction.Amount = constants.MinimalValue
 		manualTransaction.Side = constants.Purchase
-		manualTransaction.TradeDate = proceed.PaymentDate // TODO - Validar com TOM
-		manualTransaction.SourceType = constants.ManualSourceType
+		manualTransaction.TradeDate = proceed.InitialDate // TODO - Validar com TOM
+		manualTransaction.SourceType = constants.BonusInvestorSourceType
 		manualTransaction.EventDate = proceed.InitialDate
 		manualTransaction.EventName = proceed.Event
 
@@ -70,7 +70,7 @@ func ApplyInheritedBonusActionCEI(manualTransaction mapper.ManualTransaction, pr
 			manualTransaction.Price,
 			manualTransaction.Amount,
 			manualTransaction.Side,
-			manualTransaction.TradeDate.Format("02/01/2006"),
+			manualTransaction.TradeDate.String(),
 			manualTransaction.SourceType,
 			manualTransaction.EventDate.String(),
 			manualTransaction.EventName,

@@ -22,6 +22,8 @@ const (
 
 const (
 	ManualSourceType = "REGULAR"
+	BonusOMSSourceType = "OMS"
+	BonusInvestorSourceType = "InvestorB3"
 )
 
 const (

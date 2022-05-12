@@ -60,6 +60,9 @@ func ApplyEvents(customerCode string) {
 	go doProceedsOMSEvents()
 	go doProceedsCEIEvents()
 	wg.Wait()
+
+	go repository.NewWalletConnector().ResyncAveragePrice()
+
 	fmt.Println("Finalizou")
 }
 

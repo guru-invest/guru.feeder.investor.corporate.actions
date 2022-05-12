@@ -10,7 +10,8 @@ import (
 var OPTIONS Options
 
 type Options struct {
-	DATABASE DatabaseOption `json:"database"`
+	DATABASE  DatabaseOption  `json:"database"`
+	ENDPOINTS EndPointsOption `json:"endpoints"`
 }
 
 func (c *Options) Load() {
