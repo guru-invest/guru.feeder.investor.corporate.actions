@@ -14,11 +14,11 @@ WORKDIR $GOPATH/src/github.com/guru-invest/guru.feeder.investor.corporate.action
 
 COPY . .
 
-RUN apk add tzdata && \
-    cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && \
-    echo "America/Sao_Paulo" > /etc/timezone && \
-    date && \
-    apk del tzdata
+# RUN apk add tzdata && \
+#     cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && \
+#     echo "America/Sao_Paulo" > /etc/timezone && \
+#     date && \
+#     apk del tzdata
 
 RUN go build -ldflags '-linkmode=external' -mod vendor -o guru.feeder.investor.corporate.actions ./cmd/guru.feeder.investor.corporate.actions.go
 

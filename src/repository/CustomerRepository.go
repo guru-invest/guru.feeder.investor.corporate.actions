@@ -63,7 +63,12 @@ func (h CustomerRepository) getCEICustomers() ([]mapper.Customer, error) {
 	defer h._connection.disconnect()
 
 	var customer []mapper.Customer
-	err := h._connection._databaseConnection.Table("wallet.cei_items_status").Distinct("customer_code").Where("execution_status = ?", "SUCCESS").Find(&customer).Error
+	err := h._connection._databaseConnection.
+		Table("wallet.investor_sync_historical").
+		Distinct("customer_code").
+		Where("execution_status = ? AND event_type = ?", "SUCCESS", "movementEquities").
+		Order("created_at DESC").
+		Find(&customer).Error
 	if err != nil {
 		return []mapper.Customer{}, err
 	}

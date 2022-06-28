@@ -3,7 +3,7 @@ package mapper
 import "time"
 
 func (CEITransaction) TableName() string {
-	return "wallet.cei_transactions"
+	return "wallet.investor_transactions"
 }
 
 type CEITransaction struct {
