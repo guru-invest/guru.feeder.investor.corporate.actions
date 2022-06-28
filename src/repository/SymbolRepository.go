@@ -51,7 +51,7 @@ func (h SymbolRepository) getCEISymbols(customers []mapper.Customer) ([]mapper.S
 		in_customers = append(in_customers, value.CustomerCode)
 	}
 
-	err := h._connection._databaseConnection.Table("wallet.cei_transactions").Distinct("symbol").Where("customer_code in ?", in_customers).Find(&symbol).Error
+	err := h._connection._databaseConnection.Table("wallet.investor_transactions").Distinct("symbol").Where("customer_code in ?", in_customers).Find(&symbol).Error
 	if err != nil {
 		return []mapper.Symbol{}, err
 	}
