@@ -12,9 +12,9 @@ func init() {
 func main() {
 	//time_zone, _ := time.LoadLocation("America/Sao_Paulo")
 
-	//core.ApplyEvents("adR2JN3b")
-	//core.ApplyEventsAfterInvestorSync("Ayqi8gfb")
-	core.Run()
+	core.ApplyEvents("fzVzgo8b")
+	//core.ApplyEventsAfterInvestorSync("fzVzgo8b")
+	//core.Run()
 
 	// c := cron.New(cron.WithLocation(time_zone))
 	// c.AddFunc("30 2 * * *", func() { core.Run() })

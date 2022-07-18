@@ -36,7 +36,7 @@ func BasicOMSEvents(customers []mapper.Customer, corporateActions map[string][]m
 	repository.UpdateOMSTransaction(OMSTransactionPersisterObject)
 }
 
-func ProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol) {
+func ProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol, isStateLess bool) {
 	OMSTransactions := repository.GetAllOMSTransactions(customers)
 	OMSProceedPersisterObject := []mapper.OMSProceeds{}
 	for _, customer := range customers {
@@ -60,6 +60,6 @@ func ProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	}
 
 	if len(ManualTransactions) > 0 {
-		repository.InsertManualTransaction(ManualTransactions)
+		repository.InsertManualTransaction(ManualTransactions, isStateLess)
 	}
 }

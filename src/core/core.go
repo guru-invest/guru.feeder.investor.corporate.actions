@@ -56,9 +56,9 @@ func ApplyEvents(customerCode string) {
 	wg.Add(5)
 	go doBasicOMSEvents()
 	go doBasicManualEvents()
-	go doBasicCEIEvents()
-	go doProceedsOMSEvents()
-	go doProceedsCEIEvents()
+	go doBasicCEIEvents(false)
+	go doProceedsOMSEvents(false)
+	go doProceedsCEIEvents(false)
 	wg.Wait()
 
 	go repository.NewWalletConnector().ResyncAveragePrice()
@@ -79,8 +79,8 @@ func ApplyEventsAfterInvestorSync(customerCode string) error {
 	CEISymbols = repository.GetCEISymbols(CEICustomers)
 
 	wg.Add(2)
-	go doBasicCEIEvents()
-	go doProceedsCEIEvents()
+	go doBasicCEIEvents(true)
+	go doProceedsCEIEvents(true)
 	wg.Wait()
 
 	return nil
@@ -96,17 +96,17 @@ func doBasicManualEvents() {
 	manual.BasicManualEvents(ManualCustomers, CorporateActionsDesc)
 }
 
-func doBasicCEIEvents() {
+func doBasicCEIEvents(isStateLess bool) {
 	defer wg.Done()
-	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc)
+	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc, isStateLess)
 }
 
-func doProceedsOMSEvents() {
+func doProceedsOMSEvents(isStateLess bool) {
 	defer wg.Done()
-	oms.ProceedsOMSEvents(CorporateActionsAsc, OMSCustomers, OMSSymbols)
+	oms.ProceedsOMSEvents(CorporateActionsAsc, OMSCustomers, OMSSymbols, isStateLess)
 }
 
-func doProceedsCEIEvents() {
+func doProceedsCEIEvents(isStateLess bool) {
 	defer wg.Done()
-	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols)
+	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols, isStateLess)
 }

@@ -12,8 +12,12 @@ type CEIProceedsRepository struct {
 }
 
 // TODO - Não deveria estar persistindo dados aqui no repository
-func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceeds) {
-	h._connection.connect()
+func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceeds, isStateLess bool) {
+	if isStateLess {
+		h._connection.connectStateLess()
+	} else {
+		h._connection.connect()
+	}
 	defer h._connection.disconnect()
 
 	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&CEIProceeds).Error
@@ -23,7 +27,7 @@ func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceed
 
 }
 
-func InsertCEIProceeds(CEIProceeds []mapper.CEIProceeds) {
+func InsertCEIProceeds(CEIProceeds []mapper.CEIProceeds, isStateLess bool) {
 	db := CEIProceedsRepository{}
-	db.insertCEIProceeds(CEIProceeds)
+	db.insertCEIProceeds(CEIProceeds, isStateLess)
 }

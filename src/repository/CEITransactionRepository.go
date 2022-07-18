@@ -10,8 +10,12 @@ type CEITransactionRepository struct {
 	_connection DatabaseConnection
 }
 
-func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer) ([]mapper.CEITransaction, error) {
-	h._connection.connect()
+func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer, isStateLess bool) ([]mapper.CEITransaction, error) {
+	if isStateLess {
+		h._connection.connectStateLess()
+	} else {
+		h._connection.connect()
+	}
 	defer h._connection.disconnect()
 
 	var cei_transaction []mapper.CEITransaction
@@ -36,8 +40,14 @@ func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer
 }
 
 // TODO - Não deveria estar persistindo dados aqui no repository
-func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.CEITransaction) {
-	h._connection.connect()
+func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.CEITransaction, isStateLess bool) {
+
+	if isStateLess {
+		h._connection.connectStateLess()
+	} else {
+		h._connection.connect()
+	}
+
 	defer h._connection.disconnect()
 
 	for _, value := range CEITransaction {
@@ -48,9 +58,9 @@ func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.
 	}
 }
 
-func GetCEITransaction(customers []mapper.Customer) []mapper.CEITransaction {
+func GetCEITransaction(customers []mapper.Customer, isStateLess bool) []mapper.CEITransaction {
 	db := CEITransactionRepository{}
-	cei_transaction, err := db.getCEITransactions(customers)
+	cei_transaction, err := db.getCEITransactions(customers, isStateLess)
 	if err != nil {
 		log.Println(err)
 		return []mapper.CEITransaction{}
@@ -59,17 +69,17 @@ func GetCEITransaction(customers []mapper.Customer) []mapper.CEITransaction {
 	return cei_transaction
 }
 
-func UpdateCEITransaction(CEITransaction []mapper.CEITransaction) {
+func UpdateCEITransaction(CEITransaction []mapper.CEITransaction, isStateLess bool) {
 	db := CEITransactionRepository{}
-	db.updateCEITransactions(CEITransaction)
+	db.updateCEITransactions(CEITransaction, isStateLess)
 }
 
 var CEITransactionMap = map[string][]mapper.CEITransaction{}
 
-func GetAllCEITransactions(customers []mapper.Customer) map[string][]mapper.CEITransaction {
+func GetAllCEITransactions(customers []mapper.Customer, isStateLess bool) map[string][]mapper.CEITransaction {
 
 	if len(CEITransactionMap) == 0 {
-		allCEITransactions := getAllCEITransactionsMap(customers)
+		allCEITransactions := getAllCEITransactionsMap(customers, isStateLess)
 		for _, transaction := range allCEITransactions {
 			mutex.Lock()
 			CEITransactionMap[transaction.CustomerCode] = append(CEITransactionMap[transaction.CustomerCode], transaction)
@@ -81,9 +91,9 @@ func GetAllCEITransactions(customers []mapper.Customer) map[string][]mapper.CEIT
 	return CEITransactionMap
 }
 
-func getAllCEITransactionsMap(customers []mapper.Customer) []mapper.CEITransaction {
+func getAllCEITransactionsMap(customers []mapper.Customer, isStateLess bool) []mapper.CEITransaction {
 	db := CEITransactionRepository{}
-	cei_transaction, err := db.getCEITransactions(customers)
+	cei_transaction, err := db.getCEITransactions(customers, isStateLess)
 	if err != nil {
 		log.Println(err)
 		return []mapper.CEITransaction{}

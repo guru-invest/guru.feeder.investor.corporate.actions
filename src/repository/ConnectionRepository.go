@@ -57,6 +57,39 @@ func (db *DatabaseConnection) connect() {
 
 }
 
+func (db *DatabaseConnection) connectStateLess() {
+
+	DATABASE := options.OPTIONS.DATABASE
+	dsn := fmt.Sprintf(
+		"user=%s password=%s dbname=%s host=%s port=%s",
+		DATABASE.Username,
+		DATABASE.Password,
+		DATABASE.Database,
+		DATABASE.Url,
+		DATABASE.Port)
+
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		logger.Config{
+			SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
+			LogLevel:                  logger.Error,           // Log level
+			IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
+			Colorful:                  true,                   // Disable color
+		},
+	)
+
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: true,
+		Logger:                 newLogger,
+	})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	db._databaseConnection = database
+
+}
+
 func (db *DatabaseConnection) disconnect() {
 	sqlDB, err := db._databaseConnection.DB()
 	if err != nil {

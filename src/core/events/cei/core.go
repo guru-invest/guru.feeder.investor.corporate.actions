@@ -7,8 +7,8 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
-func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {
-	CEITransaction := repository.GetCEITransaction(customers)
+func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction, isStateLess bool) {
+	CEITransaction := repository.GetCEITransaction(customers, isStateLess)
 	CEITransactionPersisterObject := []mapper.CEITransaction{}
 
 	for _, transaction := range CEITransaction {
@@ -33,11 +33,11 @@ func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]m
 		}
 	}
 
-	repository.UpdateCEITransaction(CEITransactionPersisterObject)
+	repository.UpdateCEITransaction(CEITransactionPersisterObject, isStateLess)
 }
 
-func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol) {
-	CEITransactions := repository.GetAllCEITransactions(customers)
+func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol, isStateLess bool) {
+	CEITransactions := repository.GetAllCEITransactions(customers, isStateLess)
 	CEIProceedPersisterObject := []mapper.CEIProceeds{}
 	for _, customer := range customers {
 
@@ -48,7 +48,7 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	}
 
 	if len(CEIProceedPersisterObject) > 0 {
-		repository.InsertCEIProceeds(CEIProceedPersisterObject)
+		repository.InsertCEIProceeds(CEIProceedPersisterObject, isStateLess)
 	}
 
 	ManualTransactions := []mapper.ManualTransaction{}
@@ -60,6 +60,6 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	}
 
 	if len(ManualTransactions) > 0 {
-		repository.InsertManualTransaction(ManualTransactions)
+		repository.InsertManualTransaction(ManualTransactions, isStateLess)
 	}
 }

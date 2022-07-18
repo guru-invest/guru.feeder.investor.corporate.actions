@@ -49,8 +49,13 @@ func (h ManualTransactionRepository) updateManualTransactions(manualTransaction 
 	}
 }
 
-func (h ManualTransactionRepository) insertManualTransactions(manualTransaction []mapper.ManualTransaction) {
-	h._connection.connect()
+func (h ManualTransactionRepository) insertManualTransactions(manualTransaction []mapper.ManualTransaction, isStateLess bool) {
+	if isStateLess {
+		h._connection.connectStateLess()
+	} else {
+		h._connection.connect()
+	}
+
 	defer h._connection.disconnect()
 
 	for _, value := range manualTransaction {
@@ -80,7 +85,7 @@ func UpdateManualTransaction(manualTransaction []mapper.ManualTransaction) {
 	db.updateManualTransactions(manualTransaction)
 }
 
-func InsertManualTransaction(manualTransaction []mapper.ManualTransaction) {
+func InsertManualTransaction(manualTransaction []mapper.ManualTransaction, isStateLess bool) {
 	db := ManualTransactionRepository{}
-	db.insertManualTransactions(manualTransaction)
+	db.insertManualTransactions(manualTransaction, isStateLess)
 }
