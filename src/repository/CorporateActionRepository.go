@@ -49,9 +49,9 @@ func GetCorporateActions(asc_or_desc string) map[string][]mapper.CorporateAction
 	if len(corporateActionsMap) == 0 {
 		allCorporateActions := getAllCorporateActionsMap(asc_or_desc)
 		for _, value := range allCorporateActions {
-			mutex.Lock()
+			//mutex.Lock()
 			corporateActionsMap[value.Symbol] = append(corporateActionsMap[value.Symbol], value)
-			mutex.Unlock()
+			//mutex.Unlock()
 		}
 
 		return corporateActionsMap
