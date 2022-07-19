@@ -5,6 +5,7 @@ import (
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/vendor/github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 )
 
@@ -49,7 +50,7 @@ func (h ManualTransactionRepository) updateManualTransactions(manualTransaction 
 	}
 }
 
-func (h ManualTransactionRepository) insertManualTransactions(manualTransaction []mapper.ManualTransaction, isStateLess bool) {
+func (h ManualTransactionRepository) insertManualTransactions(manualTransaction []mapper.ManualTransaction, isStateLess bool) error {
 	if isStateLess {
 		h._connection.connectStateLess()
 	} else {
@@ -64,9 +65,15 @@ func (h ManualTransactionRepository) insertManualTransactions(manualTransaction 
 			DoNothing: true,
 		}).Create(&value).Error
 		if err != nil {
-			log.Println(err)
+			logrus.WithFields(logrus.Fields{
+				"Caller":        "guru.feeder.investor.corporate.actions.insertManualTransactions",
+				"isStatless":    isStateLess,
+				"CustomerCode:": value.CustomerCode,
+				"Error":         err.Error(),
+			}).Error("error insert manual proceeds")
 		}
 	}
+	return nil
 }
 
 func GetManualTransaction(customers []mapper.Customer) []mapper.ManualTransaction {
@@ -85,7 +92,6 @@ func UpdateManualTransaction(manualTransaction []mapper.ManualTransaction) {
 	db.updateManualTransactions(manualTransaction)
 }
 
-func InsertManualTransaction(manualTransaction []mapper.ManualTransaction, isStateLess bool) {
-	db := ManualTransactionRepository{}
-	db.insertManualTransactions(manualTransaction, isStateLess)
+func InsertManualTransaction(manualTransaction []mapper.ManualTransaction, isStateLess bool) error {
+	return ManualTransactionRepository{}.insertManualTransactions(manualTransaction, isStateLess)
 }

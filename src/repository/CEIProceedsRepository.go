@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"log"
-
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 	"gorm.io/gorm/clause"
 )
@@ -12,7 +10,7 @@ type CEIProceedsRepository struct {
 }
 
 // TODO - Não deveria estar persistindo dados aqui no repository
-func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceeds, isStateLess bool) {
+func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceeds, isStateLess bool) error {
 	if isStateLess {
 		h._connection.connectStateLess()
 	} else {
@@ -22,12 +20,11 @@ func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceed
 
 	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&CEIProceeds).Error
 	if err != nil {
-		log.Println(err)
+		return err
 	}
-
+	return nil
 }
 
-func InsertCEIProceeds(CEIProceeds []mapper.CEIProceeds, isStateLess bool) {
-	db := CEIProceedsRepository{}
-	db.insertCEIProceeds(CEIProceeds, isStateLess)
+func InsertCEIProceeds(CEIProceeds []mapper.CEIProceeds, isStateLess bool) error {
+	return CEIProceedsRepository{}.insertCEIProceeds(CEIProceeds, isStateLess)
 }

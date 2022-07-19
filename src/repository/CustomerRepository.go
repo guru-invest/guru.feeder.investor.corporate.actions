@@ -64,11 +64,12 @@ func (h CustomerRepository) getCEICustomers() ([]mapper.Customer, error) {
 
 	var customer []mapper.Customer
 	err := h._connection._databaseConnection.
-		Table("wallet.investor_sync_historical").
-		Distinct("customer_code").
+		Table("wallet.investor_sync_historical").Debug().
+		Distinct("customer_code, MAX(created_at) as created_at").
 		Where("execution_status = ? AND event_type = ?", "SUCCESS", "movementEquities").
-		Order("created_at DESC").
-		Find(&customer).Error
+		Group("customer_code").
+		Order("MAX(created_at) DESC").
+		Scan(&customer).Error
 	if err != nil {
 		return []mapper.Customer{}, err
 	}

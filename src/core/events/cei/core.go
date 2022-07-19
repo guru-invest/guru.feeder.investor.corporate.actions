@@ -5,6 +5,7 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/vendor/github.com/sirupsen/logrus"
 )
 
 func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction, isStateLess bool) {
@@ -48,7 +49,15 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	}
 
 	if len(CEIProceedPersisterObject) > 0 {
-		repository.InsertCEIProceeds(CEIProceedPersisterObject, isStateLess)
+		err := repository.InsertCEIProceeds(CEIProceedPersisterObject, isStateLess)
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"Caller":        "guru.feeder.investor.corporate.actions",
+				"isStatless":    isStateLess,
+				"CustomerCode:": customers[0].CustomerCode,
+				"Error":         err.Error(),
+			}).Error("error insert investor proceeds")
+		}
 	}
 
 	ManualTransactions := []mapper.ManualTransaction{}
