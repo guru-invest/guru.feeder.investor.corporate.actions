@@ -5,7 +5,7 @@ import (
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions/vendor/github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
 )
 

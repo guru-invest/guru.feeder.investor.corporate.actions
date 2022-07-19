@@ -5,7 +5,7 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions/vendor/github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction, isStateLess bool) {
