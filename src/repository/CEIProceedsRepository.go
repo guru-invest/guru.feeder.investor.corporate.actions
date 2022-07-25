@@ -19,9 +19,10 @@ func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceed
 		h._connection.connect()
 	}
 	defer h._connection.disconnect()
-	fmt.Println(CEIProceeds)
-	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&CEIProceeds).Error
+
+	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Debug().Create(&CEIProceeds).Error
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	return nil
