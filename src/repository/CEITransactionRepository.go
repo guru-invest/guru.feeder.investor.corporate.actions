@@ -29,7 +29,7 @@ func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer
 		Where("customer_code in ?", in_customers).
 		Where("movement_type = ?", "Assets-Trading").
 		Order("trade_date asc").
-		Find(&cei_transaction).
+		Find(&cei_transaction).Debug().
 		Error
 
 	if err != nil {
