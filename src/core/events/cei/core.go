@@ -42,13 +42,18 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	CEIProceedPersisterObject := []mapper.CEIProceeds{}
 	for _, customer := range customers {
 
+		logrus.WithFields(logrus.Fields{
+			"CustomerCode":    customer.CustomerCode,
+			"CeiTransactions": CEITransactions,
+		}).Info("preenche obj CEITransactions")
+
 		for _, symbol := range symbols {
 			CEIProceedPersisterObject = append(CEIProceedPersisterObject, ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, CEITransactions, corporateActions)...)
-			logrus.WithFields(logrus.Fields{
-				"CustomerCode":              customer.CustomerCode,
-				"Symbol":                    symbol.Name,
-				"CEIProceedPersisterObject": CEIProceedPersisterObject,
-			}).Info("For do ProceedsCEIEvents preenche obj CEIProceedPersisterObject")
+			// logrus.WithFields(logrus.Fields{
+			// 	"CustomerCode":              customer.CustomerCode,
+			// 	"Symbol":                    symbol.Name,
+			// 	"CEIProceedPersisterObject": CEIProceedPersisterObject,
+			// }).Info("For do ProceedsCEIEvents preenche obj CEIProceedPersisterObject")
 		}
 	}
 

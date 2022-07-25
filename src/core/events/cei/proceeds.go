@@ -7,6 +7,7 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/utils"
+	"github.com/sirupsen/logrus"
 )
 
 func ApplyProceedsCorporateAction(customer, symbol string, transactions map[string][]mapper.CEITransaction, corporateActions map[string][]mapper.CorporateAction) []mapper.CEIProceeds {
@@ -16,6 +17,11 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 		transaction_by_broker := map[float64]mapper.CEIProceeds{}
 
 		for _, transaction := range transactions[customer] {
+
+			logrus.WithFields(logrus.Fields{
+				"CustomerCode": customer,
+				"transaction":  transaction,
+			}).Info("for do transaction")
 
 			if transaction.BrokerID == constants.Ideal {
 				continue
