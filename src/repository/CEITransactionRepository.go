@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
@@ -23,12 +24,12 @@ func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer
 	for _, value := range customers {
 		in_customers = append(in_customers, value.CustomerCode)
 	}
-
+	fmt.Println(in_customers)
 	err := h._connection._databaseConnection.
 		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Where("customer_code in ?", in_customers).
 		Where("movement_type = ?", "Assets-Trading").
-		Order("trade_date asc").
+		Order("trade_date asc").Debug().
 		Find(&cei_transaction).
 		Error
 

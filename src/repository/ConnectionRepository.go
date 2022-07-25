@@ -68,19 +68,9 @@ func (db *DatabaseConnection) connectStateLess() {
 		DATABASE.Url,
 		DATABASE.Port)
 
-	newLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			//SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
-			//LogLevel:                  logger.Error,           // Log level
-			IgnoreRecordNotFoundError: false, // Ignore ErrRecordNotFound error for logger
-			//Colorful:                  true,                   // Disable color
-		},
-	)
-
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
-		Logger:                 newLogger,
+		Logger:                 logger.Default,
 	})
 	if err != nil {
 		log.Fatal(err.Error())
