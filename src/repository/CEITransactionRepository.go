@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
@@ -24,7 +23,7 @@ func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer
 	for _, value := range customers {
 		in_customers = append(in_customers, value.CustomerCode)
 	}
-	fmt.Println(in_customers)
+
 	err := h._connection._databaseConnection.
 		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Where("customer_code in ?", in_customers).
@@ -52,7 +51,7 @@ func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.
 	defer h._connection.disconnect()
 
 	for _, value := range CEITransaction {
-		err := h._connection._databaseConnection.Save(&value).Error
+		err := h._connection._databaseConnection.Save(&value).Debug().Error
 		if err != nil {
 			log.Println(err)
 		}
@@ -75,9 +74,8 @@ func UpdateCEITransaction(CEITransaction []mapper.CEITransaction, isStateLess bo
 	db.updateCEITransactions(CEITransaction, isStateLess)
 }
 
-var CEITransactionMap = map[string][]mapper.CEITransaction{}
-
 func GetAllCEITransactions(customers []mapper.Customer, isStateLess bool) map[string][]mapper.CEITransaction {
+	var CEITransactionMap = map[string][]mapper.CEITransaction{}
 
 	if len(CEITransactionMap) == 0 {
 		allCEITransactions := getAllCEITransactionsMap(customers, isStateLess)

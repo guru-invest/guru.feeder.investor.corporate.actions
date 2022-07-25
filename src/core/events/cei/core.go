@@ -1,6 +1,8 @@
 package cei
 
 import (
+	"fmt"
+
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
@@ -35,9 +37,11 @@ func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]m
 	}
 
 	repository.UpdateCEITransaction(CEITransactionPersisterObject, isStateLess)
+	fmt.Println("Finaliza o primeiro update UpdateCEITransaction - eventos")
 }
 
 func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol, isStateLess bool) {
+	fmt.Println("Inicia proventos")
 	CEITransactions := repository.GetAllCEITransactions(customers, isStateLess)
 	CEIProceedPersisterObject := []mapper.CEIProceeds{}
 	for _, customer := range customers {
