@@ -77,7 +77,7 @@ func ApplyEventsAfterInvestorSync(customerCode string) error {
 	}
 
 	CEICustomers = []mapper.Customer{Customer}
-	fmt.Println(CEICustomers)
+
 	CEISymbols = repository.GetCEISymbols(CEICustomers)
 
 	//wg.Add(2)
