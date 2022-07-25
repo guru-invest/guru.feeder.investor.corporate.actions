@@ -1,8 +1,6 @@
 package cei
 
 import (
-	"fmt"
-
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
@@ -37,32 +35,32 @@ func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]m
 	}
 
 	repository.UpdateCEITransaction(CEITransactionPersisterObject, isStateLess)
-	fmt.Println("Finaliza o primeiro update UpdateCEITransaction - eventos")
+	//fmt.Println("Finaliza o primeiro update UpdateCEITransaction - eventos")
 }
 
 func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol, isStateLess bool) {
-	fmt.Println("Inicia proventos")
+	//fmt.Println("Inicia proventos")
 	CEITransactions := repository.GetAllCEITransactions(customers, isStateLess)
 	CEIProceedPersisterObject := []mapper.CEIProceeds{}
 	for _, customer := range customers {
 
-		logrus.WithFields(logrus.Fields{
-			"CustomerCode":    customer.CustomerCode,
-			"CeiTransactions": CEITransactions,
-		}).Info("preenche obj CEITransactions")
+		// logrus.WithFields(logrus.Fields{
+		// 	"CustomerCode":    customer.CustomerCode,
+		// 	"CeiTransactions": CEITransactions,
+		// }).Info("preenche obj CEITransactions")
 
 		for _, symbol := range symbols {
 			CEIProceedPersisterObject = append(CEIProceedPersisterObject, ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, CEITransactions, corporateActions)...)
-			logrus.WithFields(logrus.Fields{
-				"CustomerCode":              customer.CustomerCode,
-				"Symbol":                    symbol.Name,
-				"CEIProceedPersisterObject": CEIProceedPersisterObject,
-			}).Info("For do ProceedsCEIEvents preenche obj CEIProceedPersisterObject")
+			// logrus.WithFields(logrus.Fields{
+			// 	"CustomerCode":              customer.CustomerCode,
+			// 	"Symbol":                    symbol.Name,
+			// 	"CEIProceedPersisterObject": CEIProceedPersisterObject,
+			// }).Info("For do ProceedsCEIEvents preenche obj CEIProceedPersisterObject")
 		}
 	}
 
 	if len(CEIProceedPersisterObject) > 0 {
-		logrus.WithFields(logrus.Fields{}).Info("aqui tem que inserir na tabela")
+		//logrus.WithFields(logrus.Fields{}).Info("aqui tem que inserir na tabela")
 		err := repository.InsertCEIProceeds(CEIProceedPersisterObject, isStateLess)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
@@ -72,7 +70,7 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 				"Error":         err.Error(),
 			}).Error("error insert investor proceeds")
 		}
-		logrus.WithFields(logrus.Fields{}).Info("Inseriu na tabela de proventos")
+		//logrus.WithFields(logrus.Fields{}).Info("Inseriu na tabela de proventos")
 	}
 
 	ManualTransactions := []mapper.ManualTransaction{}
