@@ -71,10 +71,10 @@ func (db *DatabaseConnection) connectStateLess() {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
-			LogLevel:                  logger.Error,           // Log level
-			IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
-			Colorful:                  true,                   // Disable color
+			//SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
+			//LogLevel:                  logger.Error,           // Log level
+			IgnoreRecordNotFoundError: false, // Ignore ErrRecordNotFound error for logger
+			//Colorful:                  true,                   // Disable color
 		},
 	)
 

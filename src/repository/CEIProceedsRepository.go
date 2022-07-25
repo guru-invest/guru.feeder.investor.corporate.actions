@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 	"gorm.io/gorm/clause"
 )
@@ -17,7 +19,7 @@ func (h CEIProceedsRepository) insertCEIProceeds(CEIProceeds []mapper.CEIProceed
 		h._connection.connect()
 	}
 	defer h._connection.disconnect()
-
+	fmt.Println(CEIProceeds)
 	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&CEIProceeds).Error
 	if err != nil {
 		return err
