@@ -17,6 +17,11 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 
 		for _, transaction := range transactions[customer] {
 
+			// logrus.WithFields(logrus.Fields{
+			// 	"CustomerCode":    customer,
+			// 	"CeiTransactions": transaction,
+			// }).Info("preenche obj transaction")
+
 			if transaction.BrokerID == constants.Ideal {
 				continue
 			}
