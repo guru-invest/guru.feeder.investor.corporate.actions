@@ -78,10 +78,10 @@ func ApplyEventsAfterInvestorSync(customerCode string) error {
 
 	CEISymbols = repository.GetCEISymbols(CEICustomers)
 
-	wg.Add(2)
-	go doBasicCEIEvents(true)
-	go doProceedsCEIEvents(true)
-	wg.Wait()
+	//wg.Add(2)
+	doBasicCEIEventsServerless(true)
+	doProceedsCEIEventsServerless(true)
+	//wg.Wait()
 
 	return nil
 }
@@ -108,5 +108,12 @@ func doProceedsOMSEvents(isStateLess bool) {
 
 func doProceedsCEIEvents(isStateLess bool) {
 	defer wg.Done()
+	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols, isStateLess)
+}
+
+func doBasicCEIEventsServerless(isStateLess bool) {
+	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc, isStateLess)
+}
+func doProceedsCEIEventsServerless(isStateLess bool) {
 	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols, isStateLess)
 }
