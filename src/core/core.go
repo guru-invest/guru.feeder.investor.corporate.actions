@@ -71,11 +71,13 @@ func ApplyEventsAfterInvestorSync(customerCode string) error {
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
-	Customer := mapper.Customer{}
-	Customer.CustomerCode = customerCode
+	Customer := mapper.Customer{
+		CustomerCode: customerCode,
+		CreatedAT:    time.Now().String(),
+	}
 
-	CEICustomers = append(CEICustomers, Customer)
-
+	CEICustomers = []mapper.Customer{Customer}
+	fmt.Println(CEICustomers)
 	CEISymbols = repository.GetCEISymbols(CEICustomers)
 
 	//wg.Add(2)
