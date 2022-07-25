@@ -58,7 +58,7 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 	}
 
 	if len(CEIProceedPersisterObject) > 0 {
-		logrus.WithFields(logrus.Fields{}).Info("aqui tem que inserir na tabela")
+		//logrus.WithFields(logrus.Fields{}).Info("aqui tem que inserir na tabela")
 		err := repository.InsertCEIProceeds(CEIProceedPersisterObject, isStateLess)
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
