@@ -10,7 +10,6 @@ import (
 func BasicOMSEvents(customers []mapper.Customer, corporateActions map[string][]mapper.CorporateAction) {
 	OMSTransaction := repository.GetOMSTransaction(customers)
 	OMSTransactionPersisterObject := []mapper.OMSTransaction{}
-
 	for _, transaction := range OMSTransaction {
 
 		for _, corporate_action := range corporateActions[transaction.Symbol] {

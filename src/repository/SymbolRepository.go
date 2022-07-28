@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"log"
-
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
@@ -29,15 +27,14 @@ func (h SymbolRepository) getOMSSymbols(customers []mapper.Customer) ([]mapper.S
 	return symbol, nil
 }
 
-func GetOMSSymbols(customers []mapper.Customer) []mapper.Symbol {
+func GetOMSSymbols(customers []mapper.Customer) ([]mapper.Symbol, error) {
 	db := SymbolRepository{}
 	symbols, err := db.getOMSSymbols(customers)
 	if err != nil {
-		log.Println(err)
-		return []mapper.Symbol{}
+		return []mapper.Symbol{}, err
 	}
 
-	return symbols
+	return symbols, nil
 }
 
 func (h SymbolRepository) getCEISymbols(customers []mapper.Customer) ([]mapper.Symbol, error) {
@@ -59,13 +56,11 @@ func (h SymbolRepository) getCEISymbols(customers []mapper.Customer) ([]mapper.S
 	return symbol, nil
 }
 
-func GetCEISymbols(customers []mapper.Customer) []mapper.Symbol {
-	db := SymbolRepository{}
-	symbols, err := db.getCEISymbols(customers)
+func GetCEISymbols(customers []mapper.Customer) ([]mapper.Symbol, error) {
+	symbols, err := SymbolRepository{}.getCEISymbols(customers)
 	if err != nil {
-		log.Println(err)
-		return []mapper.Symbol{}
+		return nil, err
 	}
 
-	return symbols
+	return symbols, nil
 }

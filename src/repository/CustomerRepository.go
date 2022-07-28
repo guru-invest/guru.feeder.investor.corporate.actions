@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
@@ -23,15 +23,14 @@ func (h CustomerRepository) getOMSCustomers() ([]mapper.Customer, error) {
 	return customer, nil
 }
 
-func GetOMSCustomers() []mapper.Customer {
+func GetOMSCustomers() ([]mapper.Customer, error) {
 	db := CustomerRepository{}
 	customers, err := db.getOMSCustomers()
 	if err != nil {
-		log.Println(err)
-		return []mapper.Customer{}
+		return nil, err
 	}
 
-	return customers
+	return customers, nil
 }
 
 func (h CustomerRepository) getManualCustomers() ([]mapper.Customer, error) {
@@ -41,21 +40,21 @@ func (h CustomerRepository) getManualCustomers() ([]mapper.Customer, error) {
 	var customer []mapper.Customer
 	err := h._connection._databaseConnection.Table("wallet.manual_transactions").Distinct("customer_code").Find(&customer).Error
 	if err != nil {
+		fmt.Println(err)
 		return []mapper.Customer{}, err
 	}
 
 	return customer, nil
 }
 
-func GetManualCustomers() []mapper.Customer {
+func GetManualCustomers() ([]mapper.Customer, error) {
 	db := CustomerRepository{}
 	customers, err := db.getManualCustomers()
 	if err != nil {
-		log.Println(err)
-		return []mapper.Customer{}
+		return nil, err
 	}
 
-	return customers
+	return customers, nil
 }
 
 func (h CustomerRepository) getCEICustomers() ([]mapper.Customer, error) {
@@ -64,7 +63,7 @@ func (h CustomerRepository) getCEICustomers() ([]mapper.Customer, error) {
 
 	var customer []mapper.Customer
 	err := h._connection._databaseConnection.
-		Table("wallet.investor_sync_historical").Debug().
+		Table("wallet.investor_sync_historical").
 		Distinct("customer_code, MAX(created_at) as created_at").
 		Where("execution_status = ? AND event_type = ?", "SUCCESS", "movementEquities").
 		Group("customer_code").
@@ -77,13 +76,12 @@ func (h CustomerRepository) getCEICustomers() ([]mapper.Customer, error) {
 	return customer, nil
 }
 
-func GetCEICustomers() []mapper.Customer {
+func GetCEICustomers() ([]mapper.Customer, error) {
 	db := CustomerRepository{}
 	customers, err := db.getCEICustomers()
 	if err != nil {
-		log.Println(err)
-		return []mapper.Customer{}
+		return nil, err
 	}
 
-	return customers
+	return customers, nil
 }

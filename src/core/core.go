@@ -12,9 +12,8 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/crossCutting/options"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
+	"github.com/sirupsen/logrus"
 )
-
-var wg sync.WaitGroup
 
 func Run() {
 	start := time.Now()
@@ -26,44 +25,27 @@ func Run() {
 var CorporateActionsAsc map[string][]mapper.CorporateAction
 var CorporateActionsDesc map[string][]mapper.CorporateAction
 
-var OMSCustomers []mapper.Customer
-var ManualCustomers []mapper.Customer
-var CEICustomers []mapper.Customer
-
-var OMSSymbols []mapper.Symbol
-var ManualSymbols []mapper.Symbol
-var CEISymbols []mapper.Symbol
-
 func ApplyEvents(customerCode string) {
+
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
-	if customerCode == constants.AllCustomers {
-		OMSCustomers = repository.GetOMSCustomers()
-		ManualCustomers = repository.GetManualCustomers()
-		CEICustomers = repository.GetCEICustomers()
-	} else {
-		Customer := mapper.Customer{}
-		Customer.CustomerCode = customerCode
-		OMSCustomers = append(OMSCustomers, Customer)
-		ManualCustomers = append(ManualCustomers, Customer)
-		CEICustomers = append(CEICustomers, Customer)
+	err := applyAllEventsOMS(customerCode)
+	if err != nil {
+		return
 	}
 
-	OMSSymbols = repository.GetOMSSymbols(OMSCustomers)
-	CEISymbols = repository.GetCEISymbols(CEICustomers)
+	err = applyAllEventsManual(customerCode)
+	if err != nil {
+		return
+	}
 
-	wg.Add(5)
-	go doBasicOMSEvents()
-	go doBasicManualEvents()
-	go doBasicCEIEvents(false)
-	go doProceedsOMSEvents(false)
-	go doProceedsCEIEvents(false)
-	wg.Wait()
+	err = applyAllEventsInvestor(customerCode)
+	if err != nil {
+		return
+	}
 
 	go repository.NewWalletConnector().ResyncAveragePrice()
-
-	fmt.Println("Finalizou")
 }
 
 func ApplyEventsAfterInvestorSync(customerCode string) error {
@@ -76,46 +58,177 @@ func ApplyEventsAfterInvestorSync(customerCode string) error {
 		CreatedAT:    time.Now().String(),
 	}
 
-	CEICustomers = []mapper.Customer{Customer}
+	CEICustomers := []mapper.Customer{Customer}
 
-	CEISymbols = repository.GetCEISymbols(CEICustomers)
-
-	//wg.Add(2)
-	doBasicCEIEventsServerless(true)
-	doProceedsCEIEventsServerless(true)
-	//wg.Wait()
+	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc, true)
+	doProceedsCEIEventsServerless(true, CEICustomers)
 
 	return nil
 }
 
-func doBasicOMSEvents() {
-	defer wg.Done()
-	oms.BasicOMSEvents(OMSCustomers, CorporateActionsDesc)
+func applyAllEventsInvestor(customerCode string) error {
+	var wg sync.WaitGroup
+	CEICustomers := []mapper.Customer{}
+	logrus.Info("Inicia Eventos Portal do Investidor")
+	if customerCode == constants.AllCustomers {
+		GetCEICustomers, err := repository.GetCEICustomers()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"GetCEICustomers": CEICustomers,
+				"Error":           err,
+			}).Error("erro consultando GetCEICustomers")
+			return err
+		}
+
+		if CEICustomers == nil {
+			logrus.WithFields(logrus.Fields{
+				"GetCEICustomers": CEICustomers,
+			}).Info("GetCEICustomers not found")
+			return nil
+		}
+		CEICustomers = GetCEICustomers
+	} else {
+		Customer := mapper.Customer{
+			CustomerCode: customerCode,
+			CreatedAT:    time.Now().String(),
+		}
+
+		CEICustomers = []mapper.Customer{Customer}
+	}
+
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc, false)
+	}()
+	go func() {
+		defer wg.Done()
+		doProceedsCEIEvents(false, CEICustomers)
+	}()
+
+	wg.Wait()
+	logrus.Info("Finaliza Eventos Portal do Investidor")
+	return nil
 }
 
-func doBasicManualEvents() {
-	defer wg.Done()
+func applyAllEventsManual(customerCode string) error {
+	ManualCustomers := []mapper.Customer{}
+	logrus.Info("Inicia Eventos Manuais")
+	if customerCode == constants.AllCustomers {
+		GetManualCustomers, err := repository.GetManualCustomers()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"GetManualCustomers": GetManualCustomers,
+				"Error":              err,
+			}).Error("erro consultando GetManualCustomers")
+			return err
+		}
+		logrus.WithFields(logrus.Fields{
+			"Total": len(GetManualCustomers),
+		}).Info("Pega total dos manuais")
+		
+		if ManualCustomers == nil {
+			logrus.WithFields(logrus.Fields{
+				"GetManualCustomers": GetManualCustomers,
+			}).Info("GetManualCustomers not found")
+			return nil
+		}
+		ManualCustomers = GetManualCustomers
+	} else {
+		Customer := mapper.Customer{
+			CustomerCode: customerCode,
+			CreatedAT:    time.Now().String(),
+		}
+
+		ManualCustomers = []mapper.Customer{Customer}
+	}
+
 	manual.BasicManualEvents(ManualCustomers, CorporateActionsDesc)
+	logrus.Info("Finaliza Eventos Manuais")
+	return nil
 }
 
-func doBasicCEIEvents(isStateLess bool) {
-	defer wg.Done()
-	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc, isStateLess)
+func applyAllEventsOMS(customerCode string) error {
+	var wg sync.WaitGroup
+
+	logrus.Info("Inicia Eventos OMS")
+
+	OMSCustomers := []mapper.Customer{}
+	if customerCode == constants.AllCustomers {
+		GetOMSCustomers, err := repository.GetOMSCustomers()
+		if err != nil {
+			logrus.WithFields(logrus.Fields{
+				"GetOMSCustomers": GetOMSCustomers,
+				"Error":           err,
+			}).Error("erro consultando GetOMSCustomers")
+			return err
+		}
+		if OMSCustomers == nil {
+			logrus.WithFields(logrus.Fields{
+				"GetOMSCustomers": GetOMSCustomers,
+			}).Info("GetOMSCustomers not found")
+			return nil
+		}
+		OMSCustomers = GetOMSCustomers
+	} else {
+		Customer := mapper.Customer{
+			CustomerCode: customerCode,
+			CreatedAT:    time.Now().String(),
+		}
+
+		OMSCustomers = []mapper.Customer{Customer}
+	}
+
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		oms.BasicOMSEvents(OMSCustomers, CorporateActionsDesc)
+	}()
+
+	go func() {
+		defer wg.Done()
+		doProceedsOMSEvents(false, OMSCustomers)
+	}()
+
+	wg.Wait()
+	logrus.Info("Finaliza Eventos OMS")
+
+	return nil
 }
 
-func doProceedsOMSEvents(isStateLess bool) {
-	defer wg.Done()
+func doProceedsOMSEvents(isStateLess bool, OMSCustomers []mapper.Customer) {
+	OMSSymbols, err := repository.GetOMSSymbols(OMSCustomers)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"OMSSymbols": OMSSymbols,
+			"Error":      err,
+		}).Error("erro consultando OMSSymbols, segue o jogo")
+		return
+	}
+
 	oms.ProceedsOMSEvents(CorporateActionsAsc, OMSCustomers, OMSSymbols, isStateLess)
 }
 
-func doProceedsCEIEvents(isStateLess bool) {
-	defer wg.Done()
+func doProceedsCEIEvents(isStateLess bool, CEICustomers []mapper.Customer) {
+	CEISymbols, err := repository.GetCEISymbols(CEICustomers)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"CEISymbols": CEISymbols,
+			"Error":      err,
+		}).Error("erro consultando CEISymbols")
+		return
+	}
 	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols, isStateLess)
 }
 
-func doBasicCEIEventsServerless(isStateLess bool) {
-	cei.BasicCEIEvents(CEICustomers, CorporateActionsDesc, isStateLess)
-}
-func doProceedsCEIEventsServerless(isStateLess bool) {
+func doProceedsCEIEventsServerless(isStateLess bool, CEICustomers []mapper.Customer) {
+	CEISymbols, err := repository.GetCEISymbols(CEICustomers)
+	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"CEISymbols": CEISymbols,
+			"Error":      err,
+		}).Error("erro consultando CEISymbols, segue o jogo")
+		return
+	}
 	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols, isStateLess)
 }
