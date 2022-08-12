@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/utils"
 )
 
 type OMSTransactionRepository struct {
@@ -20,15 +22,23 @@ func (h OMSTransactionRepository) getOMSTransactions(customers []mapper.Customer
 		in_customers = append(in_customers, value.CustomerCode)
 	}
 
-	err := h._connection._databaseConnection.
-		Select("id, customer_code, broker_id, symbol, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
-		Where("customer_code in ?", in_customers).
-		Order("trade_date asc").
-		Find(&oms_transaction).
-		Error
+	chuncks := utils.ChunkSliceUtil{}.ChunkSlice(in_customers, 300)
 
-	if err != nil {
-		return []mapper.OMSTransaction{}, err
+	for _, customer := range chuncks {
+		var internal_oms_transaction []mapper.OMSTransaction
+
+		err := h._connection._databaseConnection.
+			Select("id, customer_code, broker_id, symbol, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+			Where("customer_code in ?", customer).
+			Order("trade_date asc").
+			Find(&internal_oms_transaction).
+			Error
+
+		if err != nil {
+			fmt.Println(err)
+			return []mapper.OMSTransaction{}, err
+		}
+		oms_transaction = append(oms_transaction, internal_oms_transaction...)
 	}
 
 	return oms_transaction, nil
@@ -42,6 +52,7 @@ func (h OMSTransactionRepository) updateOMSTransactions(OMSTransaction []mapper.
 	for _, value := range OMSTransaction {
 		err := h._connection._databaseConnection.Save(&value).Error
 		if err != nil {
+			fmt.Println(err)
 			log.Println(err)
 		}
 	}
@@ -52,6 +63,7 @@ func GetOMSTransaction(customers []mapper.Customer) []mapper.OMSTransaction {
 	oms_transaction, err := db.getOMSTransactions(customers)
 	if err != nil {
 		log.Println(err)
+		fmt.Println(err)
 		return []mapper.OMSTransaction{}
 	}
 
@@ -63,10 +75,8 @@ func UpdateOMSTransaction(OMSTransaction []mapper.OMSTransaction) {
 	db.updateOMSTransactions(OMSTransaction)
 }
 
-var OMSTransactionMap = map[string][]mapper.OMSTransaction{}
-
 func GetAllOMSTransactions(customers []mapper.Customer) map[string][]mapper.OMSTransaction {
-
+	var OMSTransactionMap = map[string][]mapper.OMSTransaction{}
 	if len(OMSTransactionMap) == 0 {
 		allOMSTransactions := getAllOMSTransactionsMap(customers)
 		for _, transaction := range allOMSTransactions {
@@ -85,6 +95,7 @@ func getAllOMSTransactionsMap(customers []mapper.Customer) []mapper.OMSTransacti
 	oms_transaction, err := db.getOMSTransactions(customers)
 	if err != nil {
 		log.Println(err)
+		fmt.Println(err)
 		return []mapper.OMSTransaction{}
 	}
 

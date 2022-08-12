@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/utils"
 )
 
 type CEITransactionRepository struct {
@@ -24,16 +26,22 @@ func (h CEITransactionRepository) getCEITransactions(customers []mapper.Customer
 		in_customers = append(in_customers, value.CustomerCode)
 	}
 
-	err := h._connection._databaseConnection.
-		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
-		Where("customer_code in ?", in_customers).
-		Where("movement_type = ?", "Assets-Trading").
-		Order("trade_date asc").Debug().
-		Find(&cei_transaction).
-		Error
+	chuncks := utils.ChunkSliceUtil{}.ChunkSlice(in_customers, 300)
+	for _, customer := range chuncks {
+		var internal_cei_transaction []mapper.CEITransaction
 
-	if err != nil {
-		return []mapper.CEITransaction{}, err
+		err := h._connection._databaseConnection.
+			Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+			Where("customer_code in ?", customer).
+			Where("movement_type = ?", "Assets-Trading").
+			Order("trade_date asc").
+			Find(&internal_cei_transaction).Error
+
+		if err != nil {
+			fmt.Println(err)
+			return []mapper.CEITransaction{}, err
+		}
+		cei_transaction = append(cei_transaction, internal_cei_transaction...)
 	}
 
 	return cei_transaction, nil
@@ -51,8 +59,9 @@ func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.
 	defer h._connection.disconnect()
 
 	for _, value := range CEITransaction {
-		err := h._connection._databaseConnection.Save(&value).Debug().Error
+		err := h._connection._databaseConnection.Save(&value).Error
 		if err != nil {
+			fmt.Println(err)
 			log.Println(err)
 		}
 	}
@@ -63,6 +72,7 @@ func GetCEITransaction(customers []mapper.Customer, isStateLess bool) []mapper.C
 	cei_transaction, err := db.getCEITransactions(customers, isStateLess)
 	if err != nil {
 		log.Println(err)
+		fmt.Println(err)
 		return []mapper.CEITransaction{}
 	}
 
@@ -94,6 +104,7 @@ func getAllCEITransactionsMap(customers []mapper.Customer, isStateLess bool) []m
 	db := CEITransactionRepository{}
 	cei_transaction, err := db.getCEITransactions(customers, isStateLess)
 	if err != nil {
+		fmt.Println(err)
 		log.Println(err)
 		return []mapper.CEITransaction{}
 	}

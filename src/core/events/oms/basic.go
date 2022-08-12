@@ -8,7 +8,10 @@ import (
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
 func ApplyBasicCorporateAction(OMSTransaction mapper.OMSTransaction, corporate_action mapper.CorporateAction) mapper.OMSTransaction {
-
+	targetTicket := corporate_action.TargetTicker
+	if corporate_action.TargetTicker == "" {
+		targetTicket = corporate_action.Symbol
+	}
 	OMSTransaction.EventFactor = corporate_action.CalculatedFactor
 	// Quando for um evento de Atualização, o Fator deve ser 1, pois a Quantidade e o Preço não podem ser alterados.
 	if corporate_action.Description == constants.Update {
@@ -16,7 +19,7 @@ func ApplyBasicCorporateAction(OMSTransaction mapper.OMSTransaction, corporate_a
 	}
 
 	OMSTransaction.EventName = corporate_action.Description
-	OMSTransaction.PostEventSymbol = corporate_action.TargetTicker
+	OMSTransaction.PostEventSymbol = targetTicket
 	OMSTransaction.EventDate = corporate_action.ComDate
 	OMSTransaction.PostEventQuantity = OMSTransaction.PostEventQuantity / OMSTransaction.EventFactor
 	OMSTransaction.PostEventPrice = utils.Truncate(OMSTransaction.Amount/OMSTransaction.PostEventQuantity, 2)

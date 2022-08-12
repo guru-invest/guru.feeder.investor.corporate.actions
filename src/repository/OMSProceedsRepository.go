@@ -16,7 +16,7 @@ func (h OMSProceedsRepository) insertOMSProceeds(OMSProceeds []mapper.OMSProceed
 	h._connection.connect()
 	defer h._connection.disconnect()
 
-	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&OMSProceeds).Error
+	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).CreateInBatches(&OMSProceeds, 300).Error
 	if err != nil {
 		log.Println(err)
 	}

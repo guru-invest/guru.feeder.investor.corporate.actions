@@ -11,14 +11,17 @@ import (
 
 // Eventos basicos contemplam Grupamento, Desdobramento e Atualização
 func ApplyBasicCorporateAction(manualTransaction mapper.ManualTransaction, corporate_action mapper.CorporateAction) mapper.ManualTransaction {
-
+	targetTicket := corporate_action.TargetTicker
+	if corporate_action.TargetTicker == "" {
+		targetTicket = corporate_action.Symbol
+	}
 	// Quando for um evento de Atualização, o Fator deve ser 1, pois a Quantidade e o Preço não podem ser alterados.
 	manualTransaction.EventFactor = corporate_action.CalculatedFactor
 	if corporate_action.Description == constants.Update {
 		manualTransaction.EventFactor = 1
 	}
 	manualTransaction.EventName = corporate_action.Description
-	manualTransaction.PostEventSymbol = corporate_action.TargetTicker
+	manualTransaction.PostEventSymbol = targetTicket
 	manualTransaction.EventDate = corporate_action.ComDate
 	manualTransaction.PostEventQuantity = float64(manualTransaction.Quantity) / manualTransaction.EventFactor
 	manualTransaction.PostEventPrice = utils.Truncate(manualTransaction.Amount/manualTransaction.PostEventQuantity, 2)

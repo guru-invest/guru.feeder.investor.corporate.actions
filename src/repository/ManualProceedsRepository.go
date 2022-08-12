@@ -16,7 +16,7 @@ func (h ManualProceedsRepository) insertManualProceeds(manualProceeds []mapper.M
 	h._connection.connect()
 	defer h._connection.disconnect()
 
-	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).Create(&manualProceeds).Error
+	err := h._connection._databaseConnection.Clauses(clause.OnConflict{DoNothing: true}).CreateInBatches(&manualProceeds, 300).Error
 	if err != nil {
 		log.Println(err)
 	}
