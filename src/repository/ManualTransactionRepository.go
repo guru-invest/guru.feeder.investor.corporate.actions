@@ -19,28 +19,18 @@ func (h ManualTransactionRepository) getManualTransactions(customers []string) (
 	defer h._connection.disconnect()
 
 	var manual_transaction []mapper.ManualTransaction
-	// var in_customers []string
-	// for _, value := range customers {
-	// 	in_customers = append(in_customers, value.CustomerCode)
-	// }
 
-	// chuncks := utils.ChunkSliceUtil{}.ChunkSlice(in_customers, 800)
-
-	// for _, customer := range chuncks {
-	//var internal_manual_transaction []mapper.ManualTransaction
 	result := h._connection._databaseConnection.
 		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, source_type, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
 		Where("customer_code in ? and event_name <> ?", customers, constants.Bonus).
-		Order("trade_date asc").Debug().
+		Order("trade_date asc").
 		Find(&manual_transaction)
 
 	if result.Error != nil {
 		fmt.Println(result.Error)
 		return []mapper.ManualTransaction{}, result.Error
 	}
-	//manual_transaction = append(manual_transaction, internal_manual_transaction...)
-	//}
-	//fmt.Println(len(manual_transaction))
+
 	return manual_transaction, nil
 }
 

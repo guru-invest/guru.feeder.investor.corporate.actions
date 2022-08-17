@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
 
@@ -50,6 +52,7 @@ func (h SymbolRepository) getCEISymbols(customers []mapper.Customer) ([]mapper.S
 
 	err := h._connection._databaseConnection.Table("wallet.investor_transactions").Distinct("symbol").Where("customer_code in ?", in_customers).Find(&symbol).Error
 	if err != nil {
+		fmt.Println(err)
 		return []mapper.Symbol{}, err
 	}
 

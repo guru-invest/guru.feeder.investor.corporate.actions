@@ -70,6 +70,7 @@ func (h CustomerRepository) getCEICustomers() ([]mapper.Customer, error) {
 		Order("MAX(created_at) DESC").
 		Scan(&customer).Error
 	if err != nil {
+		fmt.Println(err)
 		return []mapper.Customer{}, err
 	}
 

@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/cei"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
@@ -24,23 +25,26 @@ func Run() {
 
 var CorporateActionsAsc map[string][]mapper.CorporateAction
 var CorporateActionsDesc map[string][]mapper.CorporateAction
+var hashLogID string
 
 func ApplyEvents(customerCode string) {
+	id := uuid.New()
+	hashLogID = id.String()
 
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
-	err := applyAllEventsOMS(customerCode)
+	err := applyAllEventsInvestor(customerCode)
+	if err != nil {
+		return
+	}
+
+	err = applyAllEventsOMS(customerCode)
 	if err != nil {
 		return
 	}
 
 	err = applyAllEventsManual(customerCode)
-	if err != nil {
-		return
-	}
-
-	err = applyAllEventsInvestor(customerCode)
 	if err != nil {
 		return
 	}
@@ -69,20 +73,23 @@ func ApplyEventsAfterInvestorSync(customerCode string) error {
 func applyAllEventsInvestor(customerCode string) error {
 	var wg sync.WaitGroup
 	CEICustomers := []mapper.Customer{}
-	logrus.Info("Inicia Eventos Portal do Investidor")
+	logrus.WithFields(logrus.Fields{
+		"HashID": hashLogID,
+	}).Info("Inicia Eventos Portal do Investidor")
+
 	if customerCode == constants.AllCustomers {
 		GetCEICustomers, err := repository.GetCEICustomers()
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"GetCEICustomers": CEICustomers,
-				"Error":           err,
+				"HashID": hashLogID,
+				"Error":  err,
 			}).Error("erro consultando GetCEICustomers")
 			return err
 		}
 
-		if CEICustomers == nil {
+		if GetCEICustomers == nil {
 			logrus.WithFields(logrus.Fields{
-				"GetCEICustomers": CEICustomers,
+				"HashID": hashLogID,
 			}).Info("GetCEICustomers not found")
 			return nil
 		}
@@ -107,29 +114,32 @@ func applyAllEventsInvestor(customerCode string) error {
 	}()
 
 	wg.Wait()
-	logrus.Info("Finaliza Eventos Portal do Investidor")
+
+	logrus.WithFields(logrus.Fields{
+		"HashID": hashLogID,
+	}).Info("Finaliza Eventos Portal do Investidor")
 	return nil
 }
 
 func applyAllEventsManual(customerCode string) error {
 	ManualCustomers := []mapper.Customer{}
-	logrus.Info("Inicia Eventos Manuais")
+	logrus.WithFields(logrus.Fields{
+		"HashID": hashLogID,
+	}).Info("Inicia Eventos Manuais")
+
 	if customerCode == constants.AllCustomers {
 		GetManualCustomers, err := repository.GetManualCustomers()
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"GetManualCustomers": GetManualCustomers,
-				"Error":              err,
+				"HashID": hashLogID,
+				"Error":  err,
 			}).Error("erro consultando GetManualCustomers")
 			return err
 		}
-		logrus.WithFields(logrus.Fields{
-			"Total": len(GetManualCustomers),
-		}).Info("Pega total dos manuais")
-		
-		if ManualCustomers == nil {
+
+		if GetManualCustomers == nil {
 			logrus.WithFields(logrus.Fields{
-				"GetManualCustomers": GetManualCustomers,
+				"HashID": hashLogID,
 			}).Info("GetManualCustomers not found")
 			return nil
 		}
@@ -144,28 +154,32 @@ func applyAllEventsManual(customerCode string) error {
 	}
 
 	manual.BasicManualEvents(ManualCustomers, CorporateActionsDesc)
-	logrus.Info("Finaliza Eventos Manuais")
+	logrus.WithFields(logrus.Fields{
+		"HashID": hashLogID,
+	}).Info("Finaliza Eventos Manuais")
 	return nil
 }
 
 func applyAllEventsOMS(customerCode string) error {
 	var wg sync.WaitGroup
 
-	logrus.Info("Inicia Eventos OMS")
+	logrus.WithFields(logrus.Fields{
+		"HashID": hashLogID,
+	}).Info("Inicia Eventos OMS")
 
 	OMSCustomers := []mapper.Customer{}
 	if customerCode == constants.AllCustomers {
 		GetOMSCustomers, err := repository.GetOMSCustomers()
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
-				"GetOMSCustomers": GetOMSCustomers,
-				"Error":           err,
+				"HashID": hashLogID,
+				"Error":  err,
 			}).Error("erro consultando GetOMSCustomers")
 			return err
 		}
 		if OMSCustomers == nil {
 			logrus.WithFields(logrus.Fields{
-				"GetOMSCustomers": GetOMSCustomers,
+				"HashID": hashLogID,
 			}).Info("GetOMSCustomers not found")
 			return nil
 		}
@@ -191,7 +205,10 @@ func applyAllEventsOMS(customerCode string) error {
 	}()
 
 	wg.Wait()
-	logrus.Info("Finaliza Eventos OMS")
+
+	logrus.WithFields(logrus.Fields{
+		"HashID": hashLogID,
+	}).Info("Finaliza Eventos OMS")
 
 	return nil
 }
@@ -200,8 +217,8 @@ func doProceedsOMSEvents(isStateLess bool, OMSCustomers []mapper.Customer) {
 	OMSSymbols, err := repository.GetOMSSymbols(OMSCustomers)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"OMSSymbols": OMSSymbols,
-			"Error":      err,
+			"HashID": hashLogID,
+			"Error":  err,
 		}).Error("erro consultando OMSSymbols, segue o jogo")
 		return
 	}
@@ -213,11 +230,12 @@ func doProceedsCEIEvents(isStateLess bool, CEICustomers []mapper.Customer) {
 	CEISymbols, err := repository.GetCEISymbols(CEICustomers)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"CEISymbols": CEISymbols,
-			"Error":      err,
+			"HashID": hashLogID,
+			"Error":  err,
 		}).Error("erro consultando CEISymbols")
 		return
 	}
+
 	cei.ProceedsCEIEvents(CorporateActionsAsc, CEICustomers, CEISymbols, isStateLess)
 }
 
@@ -225,8 +243,8 @@ func doProceedsCEIEventsServerless(isStateLess bool, CEICustomers []mapper.Custo
 	CEISymbols, err := repository.GetCEISymbols(CEICustomers)
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
-			"CEISymbols": CEISymbols,
-			"Error":      err,
+			"HashID": hashLogID,
+			"Error":  err,
 		}).Error("erro consultando CEISymbols, segue o jogo")
 		return
 	}

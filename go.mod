@@ -3,6 +3,7 @@ module github.com/guru-invest/guru.feeder.investor.corporate.actions
 go 1.17
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/guru-invest/guru.framework v0.0.0-20211223124941-505e4113d68b
 	github.com/sirupsen/logrus v1.9.0
 	gorm.io/driver/postgres v1.2.3
