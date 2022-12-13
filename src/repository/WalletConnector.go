@@ -15,8 +15,37 @@ func NewWalletConnector() WalletConnector {
 	}
 }
 
-func (t WalletConnector) ResyncAveragePrice() error {
-	uri := t._baseURL + "/all/recalcavg"
+func (t WalletConnector) ResyncAVGInvestor() error {
+	uri := t._baseURL + "/b3/recalc/avg"
+	client := http_connector.HttpClient{}
+
+	header := map[string]string{
+		"Content-type": "application/json",
+	}
+	_, err := client.Patch(uri, nil, header)
+	if err != nil {
+
+		return err
+	}
+	return nil
+}
+
+func (t WalletConnector) ResyncAVGManual() error {
+	uri := t._baseURL + "/manual/recalcavg"
+	client := http_connector.HttpClient{}
+
+	header := map[string]string{
+		"Content-type": "application/json",
+	}
+	_, err := client.Post(uri, nil, header)
+	if err != nil {
+
+		return err
+	}
+	return nil
+}
+func (t WalletConnector) ResyncAVGOMS() error {
+	uri := t._baseURL + "/oms/recalcavg"
 	client := http_connector.HttpClient{}
 
 	header := map[string]string{

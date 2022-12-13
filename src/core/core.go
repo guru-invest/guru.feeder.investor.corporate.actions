@@ -34,12 +34,12 @@ func ApplyEvents(customerCode string) {
 	CorporateActionsAsc = repository.GetCorporateActions("asc")
 	CorporateActionsDesc = repository.GetCorporateActions("desc")
 
-	err := applyAllEventsInvestor(customerCode)
+	err := applyAllEventsOMS(customerCode)
 	if err != nil {
 		return
 	}
 
-	err = applyAllEventsOMS(customerCode)
+	err = applyAllEventsInvestor(customerCode)
 	if err != nil {
 		return
 	}
@@ -49,7 +49,10 @@ func ApplyEvents(customerCode string) {
 		return
 	}
 
-	go repository.NewWalletConnector().ResyncAveragePrice()
+	walletConnector := repository.NewWalletConnector()
+	walletConnector.ResyncAVGOMS()
+	walletConnector.ResyncAVGInvestor()
+	walletConnector.ResyncAVGManual()
 }
 
 func ApplyEventsAfterInvestorSync(customerCode string) error {
