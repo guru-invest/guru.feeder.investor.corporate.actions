@@ -1,8 +1,6 @@
 package oms
 
 import (
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/core/events/manual"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
@@ -33,32 +31,4 @@ func BasicOMSEvents(customers []mapper.Customer, corporateActions map[string][]m
 	}
 
 	repository.UpdateOMSTransaction(OMSTransactionPersisterObject)
-}
-
-func ProceedsOMSEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol, isStateLess bool) {
-	OMSTransactions := repository.GetAllOMSTransactions(customers)
-	OMSProceedPersisterObject := []mapper.OMSProceeds{}
-	for _, customer := range customers {
-		//talez aqui
-		for _, symbol := range symbols {
-			OMSProceedPersisterObject = append(OMSProceedPersisterObject, ApplyProceedsCorporateAction(customer.CustomerCode, symbol.Name, OMSTransactions, corporateActions)...)
-
-		}
-	}
-
-	if len(OMSProceedPersisterObject) > 0 {
-		repository.InsertOMSProceeds(OMSProceedPersisterObject)
-	}
-
-	ManualTransactions := []mapper.ManualTransaction{}
-	for _, proceed := range OMSProceedPersisterObject {
-		if proceed.Event == constants.Bonus {
-			ManualTransaction := mapper.ManualTransaction{}
-			ManualTransactions = append(ManualTransactions, manual.ApplyInheritedBonusActionOMS(ManualTransaction, proceed))
-		}
-	}
-
-	if len(ManualTransactions) > 0 {
-		repository.InsertManualTransaction(ManualTransactions, isStateLess)
-	}
 }
