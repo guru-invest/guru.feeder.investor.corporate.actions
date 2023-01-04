@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/core"
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/app/handlers"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/crossCutting/options"
 )
 
@@ -12,9 +12,8 @@ func init() {
 }
 
 func main() {
-	//time_zone, _ := time.LoadLocation("America/Sao_Paulo")
 	fmt.Println("Fluxo Iniciado")
-	core.ApplyEvents("fkpBfcK4")
+	handlers.ApplyEventsHandler{}.NewApplyEventsHandler("fzVzgo8b")
 	//core.ApplyEventsAfterInvestorSync("fzVzgo8b")
 	defer func() {
 		if r := recover(); r != nil {
@@ -22,13 +21,5 @@ func main() {
 
 		}
 	}()
-	//core.Run()
 	fmt.Println("Fluxo Finalizado")
-	// c := cron.New(cron.WithLocation(time_zone))
-	// c.AddFunc("30 2 * * *", func() { core.Run() })
-	// go c.Start()
-	// sig := make(chan os.Signal, 1)
-	// signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-
-	// <-sig
 }

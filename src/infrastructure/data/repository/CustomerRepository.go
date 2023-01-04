@@ -24,7 +24,7 @@ func (t CustomerRepository) GetAll() ([]dtos.Customer, error) {
 
 	err := t._connection.DatabaseConnection.
 		Raw(statements.CustomerGetAll).
-		Find(&customers).Error()
+		Find(&customers).Error
 	if err != nil {
 		return nil, err
 	}

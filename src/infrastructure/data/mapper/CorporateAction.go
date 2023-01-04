@@ -6,6 +6,7 @@ import (
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/crossCutting/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/crossCutting/utils"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/domain"
+	"github.com/shopspring/decimal"
 )
 
 func (h CorporateAction) IsBasic() bool {
@@ -21,14 +22,14 @@ func (h CorporateAction) IsBonusProceeds() bool {
 }
 
 type CorporateAction struct {
-	Symbol           string    `gorm:"column:ticker"`
-	Description      string    `gorm:"column:description"`
-	Value            float64   `gorm:"column:value"`
-	PaymentDate      time.Time `gorm:"column:payment_date"`
-	ComDate          time.Time `gorm:"column:com_date"`
-	TargetTicker     string    `gorm:"column:target_ticker"`
-	CalculatedFactor float64   `gorm:"column:calculated_factor"`
-	InitialDate      time.Time `gorm:"column:initial_date"`
+	Symbol           string          `gorm:"column:ticker"`
+	Description      string          `gorm:"column:description"`
+	Value            decimal.Decimal `gorm:"column:value"`
+	PaymentDate      time.Time       `gorm:"column:payment_date"`
+	ComDate          time.Time       `gorm:"column:com_date"`
+	TargetTicker     string          `gorm:"column:target_ticker"`
+	CalculatedFactor decimal.Decimal `gorm:"column:calculated_factor"`
+	InitialDate      time.Time       `gorm:"column:initial_date"`
 }
 
 func (t CorporateAction) ToDomain(mapper []CorporateAction) *domain.CorporateActionList {

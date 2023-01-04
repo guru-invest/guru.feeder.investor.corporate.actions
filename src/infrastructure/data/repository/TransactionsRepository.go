@@ -3,16 +3,14 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
+	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/crossCutting/utils"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/domain"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/domain/dtos"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/domain/interfaces"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/infrastructure/data/mapper"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/infrastructure/data/providers"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/infrastructure/data/statements"
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/repository/mapper"
-	"github.com/guru-invest/guru.feeder.investor.corporate.actions.oms/src/utils"
 )
 
 type TransactionsRepository struct {
@@ -43,7 +41,7 @@ func (t TransactionsRepository) GetTransactionsByCustomerCodes(customers []dtos.
 		err := t._connection.DatabaseConnection.
 			Raw(statements.GetTransactionsByCustomerCodes, sql.Named("customerCodes", customer)).
 			Find(&internal_oms_transaction).
-			Error()
+			Error
 
 		if err != nil {
 			fmt.Println(err)
@@ -55,45 +53,30 @@ func (t TransactionsRepository) GetTransactionsByCustomerCodes(customers []dtos.
 	return mapper.Transaction{}.ToDomain(oms_transaction), nil
 }
 
-// TODO - Não deveria estar persistindo dados aqui no repository
-func (t TransactionsRepository) updateOMSTransactions(OMSTransaction []mapper.OMSTransaction) {
-	for _, value := range OMSTransaction {
+func (t TransactionsRepository) UpdateTransactions(transactions domain.TransactionList) error {
+
+	for _, value := range transactions.List {
 		err := t._connection.DatabaseConnection.Save(&value).Error
 		if err != nil {
-			fmt.Println(err)
-			log.Println(err)
+			return err
 		}
 	}
+
+	return nil
 }
 
-func (t TransactionsRepository) UpdateOMSTransaction(OMSTransaction domain.TransactionList) {
-	db := TransactionsRepository{}
-	db.updateOMSTransactions(OMSTransaction)
-}
+func (t TransactionsRepository) GetSymbolsByCustomerCodes(customers []dtos.Customer) ([]dtos.Symbol, error) {
+	var symbol []dtos.Symbol
 
-func GetAllOMSTransactions(customers []mapper.Customer) map[string][]mapper.OMSTransaction {
-	var OMSTransactionMap = map[string][]mapper.OMSTransaction{}
-	if len(OMSTransactionMap) == 0 {
-		allOMSTransactions := getAllOMSTransactionsMap(customers)
-		for _, transaction := range allOMSTransactions {
-			mutex.Lock()
-			OMSTransactionMap[transaction.CustomerCode] = append(OMSTransactionMap[transaction.CustomerCode], transaction)
-			mutex.Unlock()
-		}
-
-		return OMSTransactionMap
+	var in_customers []string
+	for _, value := range customers {
+		in_customers = append(in_customers, value.CustomerCode)
 	}
-	return OMSTransactionMap
-}
 
-func getAllOMSTransactionsMap(customers []mapper.Customer) []mapper.OMSTransaction {
-	db := TransactionsRepository{}
-	oms_transaction, err := db.getOMSTransactions(customers)
+	err := t._connection.DatabaseConnection.Table("wallet.oms_transactions").Distinct("symbol").Where("customer_code in ?", in_customers).Find(&symbol).Error
 	if err != nil {
-		log.Println(err)
-		fmt.Println(err)
-		return []mapper.OMSTransaction{}
+		return []dtos.Symbol{}, err
 	}
 
-	return oms_transaction
+	return symbol, nil
 }
