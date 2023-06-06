@@ -34,7 +34,7 @@ func (c *Options) Load() {
 func (c *Options) getConfig() []byte {
 	client := http_connector.HttpClient{}
 	consulURL := ConsulOption{}.Get()
-	res, err := client.Get(consulURL, nil)
+	res, err := client.Get(consulURL)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"Error": err.Error(),

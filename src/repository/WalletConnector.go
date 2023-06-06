@@ -1,28 +1,34 @@
 package repository
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/crossCutting/options"
 	http_connector "github.com/guru-invest/guru.framework/src/infrastructure/http-connector"
 )
 
 type WalletConnector struct {
-	_baseURL string
+	_baseURL    string
+	_HTTPClient http_connector.HttpClient
 }
 
 func NewWalletConnector() WalletConnector {
 	return WalletConnector{
 		_baseURL: options.OPTIONS.ENDPOINTS.WalletSync,
+		_HTTPClient: http_connector.HttpClient{
+			Header: http.Header{
+				"Content-type": []string{"application/json"},
+			},
+			Timeout: 200 * time.Second,
+		},
 	}
 }
 
 func (t WalletConnector) ResyncAVGInvestor() error {
 	uri := t._baseURL + "/b3/recalc/avg"
-	client := http_connector.HttpClient{}
 
-	header := map[string]string{
-		"Content-type": "application/json",
-	}
-	_, err := client.Patch(uri, nil, header)
+	_, err := t._HTTPClient.Patch(uri, nil)
 	if err != nil {
 
 		return err
@@ -32,12 +38,8 @@ func (t WalletConnector) ResyncAVGInvestor() error {
 
 func (t WalletConnector) ResyncAVGManual() error {
 	uri := t._baseURL + "/manual/recalcavg"
-	client := http_connector.HttpClient{}
 
-	header := map[string]string{
-		"Content-type": "application/json",
-	}
-	_, err := client.Post(uri, nil, header)
+	_, err := t._HTTPClient.Post(uri, nil)
 	if err != nil {
 
 		return err
@@ -46,12 +48,8 @@ func (t WalletConnector) ResyncAVGManual() error {
 }
 func (t WalletConnector) ResyncAVGOMS() error {
 	uri := t._baseURL + "/oms/recalcavg"
-	client := http_connector.HttpClient{}
 
-	header := map[string]string{
-		"Content-type": "application/json",
-	}
-	_, err := client.Post(uri, nil, header)
+	_, err := t._HTTPClient.Post(uri, nil)
 	if err != nil {
 
 		return err
