@@ -31,8 +31,10 @@ func ApplyEvents(customerCode string) {
 	id := uuid.New()
 	hashLogID = id.String()
 
-	CorporateActionsAsc = repository.GetCorporateActions("asc")
-	CorporateActionsDesc = repository.GetCorporateActions("desc")
+	teste, _ := repository.GetCorporateActions("asc")
+	teste2, _ := repository.GetCorporateActions("desc")
+	fmt.Println(teste, teste2)
+	//CorporateActionsDesc = repository.GetCorporateActions("desc")
 
 	err := applyAllEventsOMS(customerCode)
 	if err != nil {
@@ -57,8 +59,8 @@ func ApplyEvents(customerCode string) {
 
 func ApplyEventsAfterInvestorSync(customerCode string) error {
 	options.OPTIONS.Load()
-	CorporateActionsAsc = repository.GetCorporateActions("asc")
-	CorporateActionsDesc = repository.GetCorporateActions("desc")
+	// CorporateActionsAsc = repository.GetCorporateActions("asc")
+	// CorporateActionsDesc = repository.GetCorporateActions("desc")
 
 	Customer := mapper.Customer{
 		CustomerCode: customerCode,

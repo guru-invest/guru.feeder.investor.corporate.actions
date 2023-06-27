@@ -14,7 +14,8 @@ func init() {
 func main() {
 	//time_zone, _ := time.LoadLocation("America/Sao_Paulo")
 	fmt.Println("Fluxo Iniciado")
-	core.ApplyEvents("0")
+	core.ApplyEvents("fzVzgo8b")
+	//core.ApplyEvents("0")
 	//core.ApplyEventsAfterInvestorSync("fzVzgo8b")
 	defer func() {
 		if r := recover(); r != nil {
