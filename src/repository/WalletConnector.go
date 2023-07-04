@@ -46,13 +46,3 @@ func (t WalletConnector) ResyncAVGManual() error {
 	}
 	return nil
 }
-func (t WalletConnector) ResyncAVGOMS() error {
-	uri := t._baseURL + "/oms/recalcavg"
-
-	_, err := t._HTTPClient.Post(uri, nil)
-	if err != nil {
-
-		return err
-	}
-	return nil
-}

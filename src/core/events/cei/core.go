@@ -50,7 +50,7 @@ func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]m
 
 func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, customers []mapper.Customer, symbols []mapper.Symbol, isStateLess bool) {
 
-	var in_customers []string 
+	var in_customers []string
 	for _, value := range customers {
 		in_customers = append(in_customers, value.CustomerCode)
 	}
@@ -87,6 +87,7 @@ func ProceedsCEIEvents(corporateActions map[string][]mapper.CorporateAction, cus
 		if len(ManualTransactions) > 0 {
 			repository.InsertManualTransaction(ManualTransactions, isStateLess)
 		}
+		CEITransactions = nil
 	}
 
 }

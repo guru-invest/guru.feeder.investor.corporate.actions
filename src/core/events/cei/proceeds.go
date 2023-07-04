@@ -17,7 +17,7 @@ func ApplyProceedsCorporateAction(customer, symbol string, transactions map[stri
 
 		for _, transaction := range transactions[customer] {
 
-			if transaction.BrokerID == constants.Ideal {
+			if transaction.BrokerID == constants.Genial {
 				continue
 			}
 
@@ -127,7 +127,7 @@ func applyCashProceeds(customer, symbol string, transaction_by_broker map[float6
 
 func applyBonusProceeds(customer, symbol string, transaction_by_broker map[float64]mapper.CEIProceeds, transaction mapper.CEITransaction, corporate_action mapper.CorporateAction) mapper.CEIProceeds {
 
-	if transaction.BrokerID == constants.Ideal {
+	if transaction.BrokerID == constants.Genial {
 		return mapper.CEIProceeds{}
 	}
 

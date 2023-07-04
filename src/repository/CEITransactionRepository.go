@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 )
@@ -37,7 +38,7 @@ func (h CEITransactionRepository) getCEITransactions(customers []string, isState
 
 // TODO - Não deveria estar persistindo dados aqui no repository
 func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.CEITransaction, isStateLess bool) {
-
+	var wg sync.WaitGroup
 	if isStateLess {
 		h._connection.connectStateLess()
 	} else {
@@ -47,11 +48,21 @@ func (h CEITransactionRepository) updateCEITransactions(CEITransaction []mapper.
 	defer h._connection.disconnect()
 
 	for _, value := range CEITransaction {
-		err := h._connection._databaseConnection.Save(&value).Error
-		if err != nil {
-			fmt.Println(err)
-		}
+		wg.Add(1)
+		go func(valuer mapper.CEITransaction) {
+			defer wg.Done()
+			err := h._connection._databaseConnection.Save(&valuer).Error
+			if err != nil {
+				fmt.Println(err)
+			}
+		}(value)
+
+		// err := h._connection._databaseConnection.Debug().Save(&value).Error
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
 	}
+	wg.Wait()
 }
 
 func GetCEITransaction(customers []string, isStateLess bool) []mapper.CEITransaction {
@@ -73,16 +84,12 @@ func UpdateCEITransaction(CEITransaction []mapper.CEITransaction, isStateLess bo
 func GetAllCEITransactions(customers []string, isStateLess bool) map[string][]mapper.CEITransaction {
 	var CEITransactionMap = map[string][]mapper.CEITransaction{}
 
-	if len(CEITransactionMap) == 0 {
-		allCEITransactions := getAllCEITransactionsMap(customers, isStateLess)
-		for _, transaction := range allCEITransactions {
-			mutex.Lock()
-			CEITransactionMap[transaction.CustomerCode] = append(CEITransactionMap[transaction.CustomerCode], transaction)
-			mutex.Unlock()
-		}
+	allCEITransactions := getAllCEITransactionsMap(customers, isStateLess)
+	for _, transaction := range allCEITransactions {
+		CEITransactionMap[transaction.CustomerCode] = append(CEITransactionMap[transaction.CustomerCode], transaction)
 
-		return CEITransactionMap
 	}
+
 	return CEITransactionMap
 }
 

@@ -1,13 +1,15 @@
 package constants
 
 const (
-	Update           = "ATUALIZACAO"
-	Unfolding        = "DESDOBRAMENTO"
-	Grouping         = "GRUPAMENTO"
-	InterestOnEquity = "JRS CAP PROPRIO"
-	Dividend         = "DIVIDENDO"
-	Income           = "RENDIMENTO"
-	Bonus            = "BONIFICACAO"
+	Update                  = "ATUALIZACAO"
+	Unfolding               = "DESDOBRAMENTO"
+	Grouping                = "GRUPAMENTO"
+	InterestOnEquity        = "JRS CAP PROPRIO"
+	InterestOnEquityUp2Data = "JUROS SOBRE CAPITAL PRÓPRIO"
+	Dividend                = "DIVIDENDO"
+	Income                  = "RENDIMENTO"
+	Bonus                   = "BONIFICACAO"
+	Incorporation           = "INCORPORACAO"
 )
 
 const (
@@ -22,12 +24,11 @@ const (
 
 const (
 	ManualSourceType        = "REGULAR"
-	BonusOMSSourceType      = "OMS"
 	BonusInvestorSourceType = "InvestorB3"
 )
 
 const (
-	Ideal = 1618
+	Genial = 173
 )
 
 const (

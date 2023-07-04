@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
@@ -56,20 +57,27 @@ func (h ManualTransactionRepository) insertManualTransactions(manualTransaction 
 
 	defer h._connection.disconnect()
 
+	var wg sync.WaitGroup
 	for _, value := range manualTransaction {
-		err := h._connection._databaseConnection.Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "hash_id"}},
-			DoNothing: true,
-		}).Create(&value).Error
-		if err != nil {
-			logrus.WithFields(logrus.Fields{
-				"Caller":        "guru.feeder.investor.corporate.actions.insertManualTransactions",
-				"isStatless":    isStateLess,
-				"CustomerCode:": value.CustomerCode,
-				"Error":         err.Error(),
-			}).Error("error insert manual proceeds")
-		}
+		wg.Add(1)
+		go func(valuer mapper.ManualTransaction) {
+			defer wg.Done()
+			err := h._connection._databaseConnection.Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "hash_id"}},
+				DoNothing: true,
+			}).Create(&valuer).Error
+			if err != nil {
+				logrus.WithFields(logrus.Fields{
+					"Caller":        "guru.feeder.investor.corporate.actions.insertManualTransactions",
+					"isStatless":    isStateLess,
+					"CustomerCode:": valuer.CustomerCode,
+					"Error":         err.Error(),
+				}).Error("error insert manual proceeds")
+			}
+		}(value)
+
 	}
+	wg.Wait()
 	return nil
 }
 
