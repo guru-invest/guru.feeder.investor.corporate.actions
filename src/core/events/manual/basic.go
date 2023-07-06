@@ -3,6 +3,7 @@ package manual
 import (
 	"crypto/sha1"
 	"fmt"
+	"time"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
@@ -25,6 +26,7 @@ func ApplyBasicCorporateAction(manualTransaction mapper.ManualTransaction, corpo
 	manualTransaction.EventDate = corporate_action.ComDate
 	manualTransaction.PostEventQuantity = float64(manualTransaction.Quantity) / manualTransaction.EventFactor
 	manualTransaction.PostEventPrice = utils.Truncate(manualTransaction.Amount/manualTransaction.PostEventQuantity, 2)
+	manualTransaction.UpdatedAt = time.Now()
 
 	// Processo cumulativo
 	// manualTransaction.Quantity = utils.Truncate(manualTransaction.PostEventQuantity, 0)

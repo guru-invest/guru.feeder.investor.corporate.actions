@@ -17,6 +17,7 @@ type CEITransaction struct {
 	TradeDate    time.Time `gorm:"column:trade_date"`
 	Amount       float64   `gorm:"column:amount"`
 	Side         int       `gorm:"column:side"`
+	UpdatedAt    time.Time `gorm:"column:updated_at"`
 
 	// Dados calculados com base nos eventos corporativos
 	PostEventQuantity float64 `gorm:"column:post_event_quantity"`

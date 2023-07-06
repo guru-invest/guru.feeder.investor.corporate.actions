@@ -30,6 +30,10 @@ func BasicManualEvents(customers []mapper.Customer, corporateActions map[string]
 					continue
 				}
 
+				if corporate_action.InitialDate.Equal(transaction.EventDate) && corporate_action.Description == transaction.EventName {
+					continue
+				}
+
 				// Se o Event name for de Atualização, Grupamento ou Desobramento, aplica eventos corporativos basicos
 				if corporate_action.IsBasic() {
 					ManualTransactionPersisterObject = append(ManualTransactionPersisterObject, ApplyBasicCorporateAction(transaction, corporate_action))

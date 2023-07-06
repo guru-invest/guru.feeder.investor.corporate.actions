@@ -1,6 +1,8 @@
 package cei
 
 import (
+	"time"
+
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/utils"
@@ -24,6 +26,7 @@ func ApplyBasicCorporateAction(CEITransaction mapper.CEITransaction, corporate_a
 	CEITransaction.EventDate = corporate_action.ComDate
 	CEITransaction.PostEventQuantity = float64(CEITransaction.Quantity) / CEITransaction.EventFactor
 	CEITransaction.PostEventPrice = utils.Truncate(CEITransaction.Amount/CEITransaction.PostEventQuantity, 2)
+	CEITransaction.UpdatedAt = time.Now()
 
 	// Processo cumulativo
 	// CEITransaction.Quantity = utils.Truncate(CEITransaction.PostEventQuantity, 0)

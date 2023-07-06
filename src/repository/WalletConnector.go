@@ -20,7 +20,7 @@ func NewWalletConnector() WalletConnector {
 			Header: http.Header{
 				"Content-type": []string{"application/json"},
 			},
-			Timeout: 200 * time.Second,
+			Timeout: 500 * time.Second,
 		},
 	}
 }

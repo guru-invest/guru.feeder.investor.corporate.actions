@@ -15,6 +15,11 @@ func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]m
 	for _, value := range customers {
 		in_customers = append(in_customers, value.CustomerCode)
 	}
+	logrus.WithFields(logrus.Fields{
+		"Caller":        "guru.feeder.investor.corporate.actions",
+		"CustomerCodes": in_customers,
+		"Total":         len(in_customers),
+	}).Info("Customer Codes que serao aplicados eventos")
 
 	chuncks := utils.ChunkSliceUtil{}.ChunkSlice(in_customers, 200)
 	for _, item := range chuncks {
@@ -32,6 +37,11 @@ func BasicCEIEvents(customers []mapper.Customer, corporateActions map[string][]m
 
 				// Se a data de EventDate for maior, significa que eventos corporativos com datas inferiores, já foram aplicados (Eventos com ano 2001 sao eventos com data default e devem ser consideraros pois é a primeira vez)
 				if corporate_action.InitialDate.After(transaction.EventDate) && transaction.EventDate.Year() > 2001 {
+					continue
+				}
+
+				//nao aplicar novamente pra quem ja aplicou
+				if corporate_action.InitialDate.Equal(transaction.EventDate) && corporate_action.Description == transaction.EventName {
 					continue
 				}
 

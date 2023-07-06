@@ -22,7 +22,7 @@ func (h ManualTransactionRepository) getManualTransactions(customers []string) (
 	var manual_transaction []mapper.ManualTransaction
 
 	result := h._connection._databaseConnection.
-		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, source_type, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, source_type, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name, updated_at").
 		Where("customer_code in ? and event_name <> ?", customers, constants.Bonus).
 		Order("trade_date asc").
 		Find(&manual_transaction)

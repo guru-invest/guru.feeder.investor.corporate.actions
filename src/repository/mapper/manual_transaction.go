@@ -19,6 +19,7 @@ type ManualTransaction struct {
 	Side           int       `gorm:"column:side"`
 	TradeDate      time.Time `gorm:"column:trade_date"`
 	SourceType     string    `gorm:"column:source_type"`
+	UpdatedAt      time.Time `gorm:"column:updated_at"`
 
 	// Dados calculados com base nos eventos corporativos
 	PostEventQuantity float64 `gorm:"column:post_event_quantity"`

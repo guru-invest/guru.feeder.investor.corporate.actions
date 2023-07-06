@@ -3,6 +3,7 @@ package manual
 import (
 	"crypto/sha1"
 	"fmt"
+	"time"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/constants"
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/repository/mapper"
@@ -22,6 +23,7 @@ func ApplyInheritedBonusActionCEI(manualTransaction mapper.ManualTransaction, pr
 		manualTransaction.SourceType = constants.BonusInvestorSourceType
 		manualTransaction.EventDate = proceed.InitialDate
 		manualTransaction.EventName = proceed.Event
+		manualTransaction.UpdatedAt = time.Now()
 
 		StringID := fmt.Sprintf("%s %f %d %s %f %f %f %d %s %s %s %s",
 			manualTransaction.CustomerCode,

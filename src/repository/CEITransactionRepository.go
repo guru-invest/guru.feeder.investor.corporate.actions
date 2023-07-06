@@ -22,7 +22,7 @@ func (h CEITransactionRepository) getCEITransactions(customers []string, isState
 	var cei_transaction []mapper.CEITransaction
 
 	err := h._connection._databaseConnection.
-		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name").
+		Select("id, customer_code, symbol, broker_id, quantity, price, amount, side, trade_date, post_event_quantity, post_event_price, post_event_symbol, event_factor, event_date, event_name, updated_at").
 		Where("customer_code in ?", customers).
 		Where("movement_type = ?", "Assets-Trading").
 		Order("trade_date asc").
