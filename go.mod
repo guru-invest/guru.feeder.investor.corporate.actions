@@ -5,6 +5,7 @@ go 1.20
 require (
 	github.com/google/uuid v1.3.0
 	github.com/guru-invest/guru.framework v0.0.0-20230526194127-ef68b9f2f4aa
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.9.3
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.1

@@ -38,15 +38,15 @@ func ApplyEvents(customerCode string) {
 		return
 	}
 
-	err = applyAllEventsManual(customerCode)
-	if err != nil {
-		return
-	}
+	// err = applyAllEventsManual(customerCode)
+	// if err != nil {
+	// 	return
+	// }
 	CorporateActionsAsc = map[string][]mapper.CorporateAction{}
 	CorporateActionsDesc = map[string][]mapper.CorporateAction{}
 	walletConnector := repository.NewWalletConnector()
 	walletConnector.ResyncAVGInvestor()
-	walletConnector.ResyncAVGManual()
+	//walletConnector.ResyncAVGManual()
 }
 
 func ApplyEventsAfterInvestorSync(customerCode string) error {
