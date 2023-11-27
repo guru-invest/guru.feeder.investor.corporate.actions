@@ -26,7 +26,7 @@ func main() {
 		"Caller":  "main",
 	}).Info("Service Started")
 
-	c.AddFunc("15 4 * * *", func() {
+	c.AddFunc("0 5 * * *", func() {
 		start := time.Now()
 		logrus.WithFields(logrus.Fields{
 			"Service": "guru.feeder.investor.corporate.actions",

@@ -28,7 +28,7 @@ func NewWalletConnector() WalletConnector {
 func (t WalletConnector) ResyncAVGInvestor() error {
 	uri := t._baseURL + "/b3/recalc/avg"
 
-	_, err := t._HTTPClient.Patch(uri, nil)
+	_, _, err := t._HTTPClient.Patch(uri, nil)
 	if err != nil {
 
 		return err
@@ -39,7 +39,7 @@ func (t WalletConnector) ResyncAVGInvestor() error {
 func (t WalletConnector) ResyncAVGManual() error {
 	uri := t._baseURL + "/manual/recalcavg"
 
-	_, err := t._HTTPClient.Post(uri, nil)
+	_, _, err := t._HTTPClient.Post(uri, nil)
 	if err != nil {
 
 		return err
