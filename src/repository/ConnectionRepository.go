@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/guru-invest/guru.feeder.investor.corporate.actions/src/crossCutting/options"
@@ -27,20 +26,7 @@ func (db *DatabaseConnection) connect() {
 		DATABASE.Url,
 		DATABASE.Port)
 
-	newLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold:             time.Millisecond * 300, // Slow SQL threshold
-			LogLevel:                  logger.Error,           // Log level
-			IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
-			Colorful:                  true,                   // Disable color
-		},
-	)
-
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true,
-		Logger:                 newLogger,
-	})
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Discard})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -68,10 +54,7 @@ func (db *DatabaseConnection) connectStateLess() {
 		DATABASE.Url,
 		DATABASE.Port)
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		SkipDefaultTransaction: true,
-		Logger:                 logger.Default,
-	})
+	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Discard})
 	if err != nil {
 		log.Fatal(err.Error())
 	}
